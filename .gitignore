@@ -1,5 +1,12 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# --- Keep required config files ---
+!package.json
+!package-lock.json
+!tsconfig.json
+!jsconfig.json
+!next.config.js
+
 # dependencies
 /node_modules
 /.pnp
@@ -40,5 +47,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-#json
+
+# --- Ignore all other JSON and GeoJSON files ---
 *.json
+*.geojson
