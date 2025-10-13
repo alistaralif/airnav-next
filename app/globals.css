@@ -1,0 +1,238 @@
+/**
+ * index.css
+ *
+ * Provides global layout scaffolding for the React map web app.
+ * Each section is given simple temporary colors and outlines for easy visual debugging.
+ * Once alignment is confirmed, these colors can be replaced with the final theme.
+ */
+
+/* Reset browser defaults for consistent spacing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Global font and background */
+body, html, #root {
+  width: 100%;
+  height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background: #f8f9fa;
+}
+
+/* Root container controlling app layout */
+.app-container {
+  position: relative;
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ========== Navbar (Left side) ========== */
+.navbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 5vw;
+  min-width: 32px; /* Ensure minimum width for small screens */
+  height: 100vh;
+  background: #1e293b; /* Dark slate tone for visibility */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1rem;
+  gap: 1rem;
+  z-index: 3; /* Highest layer */
+}
+
+/* Each icon item */
+.nav-item {
+  font-size: 1.5rem;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.nav-item:hover {
+  color: #38bdf8; /* Accent blue */
+  transform: scale(1.1);
+}
+
+/* ========== Sidebar (Slide-in panel) ========== */
+.sidebar-container {
+  position: fixed;
+  top: 0;
+  left: 5vw; /* Start just right of navbar */
+  height: 100vh;
+  min-width: 200px;
+  /* background: #ffffff;#1e293b */
+  background: #d0dbed;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  padding: 2rem;
+  z-index: 2; /* Above map, below sidebar */
+  overflow-y: auto;
+  /* display: flex; */
+  /* border: 2px red solid; Temporary outline for debugging */
+}
+
+/* Close button inside sidebar */
+.sidebar-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.2rem;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.sidebar-close:hover {
+  color: #000;
+}
+
+/* ========== Search Bar ========== */
+.searchbar-form {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1; /* Above map but below sidebar */
+  background: rgba(255, 255, 255, 0.95);
+  padding: 6px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Adds space between input and button */
+  align-items: center;
+  width: 30vw;
+  min-width: 10vw;
+  max-width: 400vw;
+}
+
+/* Input box styling */
+.searchbar-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  background: transparent;
+  display: flex;
+  min-width: 0; /* Prevents input from overflowing */
+}
+
+/* Submit button styling */
+.searchbar-button {
+  background: none;
+  /* color: white; */
+  border: none;
+  border-radius: 4px;
+  padding: 8px  8px 4px 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background 0.2s;
+  /* margin-left: auto; Pushes button to the right */
+}
+
+.searchbar-button:hover {
+  background: #1d4ed8;
+}
+
+/* ========== Mapbox Container ========== */
+.mapbox-container {
+  position: absolute;
+  left: 5vw; /* Account for navbar width */
+  top: 0;
+  width: 95vw;
+  height: 100vh;
+  z-index: 0; /* Base layer */
+}
+
+/* Temporary outline for layout testing */
+.mapbox-container::after {
+  content: "Airnav by ATMRI";
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+/* Popup Styling Overrides */
+.mapboxgl-popup-content {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+  border: 2px solid rgba(0, 0, 0, 0.1) !important;
+  background: white !important;
+  padding: 0 !important;  /* since your inner HTML already has padding */
+  overflow: shown !important; /* ensures rounded corners do not clip the inner HTML */
+}
+
+.mapboxgl-popup-close-button {
+  padding: 3px 5px !important;
+}
+
+.mapboxgl-popup-tip {
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25)); /* gives shadow to the arrow */
+}
+
+/* ====== Map Layers Panel (within sidebar) ====== */
+.layer-toggle {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.legend-list {
+  padding-left: 4px;
+}
+
+/* Floating map legend (bottom-right overlay) */
+.floating-legend {
+  position: absolute;
+  right: 25px;
+  bottom: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  min-width: 160px;
+  max-width: 220px;
+}
+
+.legend-header {
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-symbol {
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.legend-label {
+  color: #333;
+}
+
+/* === Logo === */
+.nav-logo {
+  margin-top: auto;
+  background-color: #d0dbed;
+}
