@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useMap } from "@/context/MapContext";
 import { COLORS } from "../Mapbox/colors";
+import * as turf from '@turf/turf';
+
 
 /**
  * SearchBar.jsx
@@ -74,15 +76,19 @@ export default function SearchBar() {
 
     // Extracts midpoint coordinates depending on geometry type
     let lon, lat;
-
+    
+    // For Point, use the coordinates directly
     if (feature.geometry.type === "Point") {
       [lon, lat] = feature.geometry.coordinates;
+    } else if (feature.geometry.type === "Polygon") {
+
+      // Calculate the center of the polygon using turf.js
+      const center = turf.centroid(feature.geometry);
+      [lon, lat] = center.geometry.coordinates;
     } else {
-      // Handles Polygon or LineString by selecting midpoint
-      const coords =
-        feature.geometry.type === "Polygon"
-          ? feature.geometry.coordinates[0]
-          : feature.geometry.coordinates;
+
+      // For LineString, keep using midpoint
+      const coords = feature.geometry.coordinates;
       if (coords.length) {
         const mid = Math.floor(coords.length / 2);
         [lon, lat] = coords[mid];
@@ -90,7 +96,9 @@ export default function SearchBar() {
     }
 
     // Moves the map and adds highlight
-    map.flyTo({ center: [lon, lat], zoom: zoomLevel });
+    setTimeout(() => {
+      map.flyTo({ center: [lon, lat], zoom: zoomLevel });
+    }, 100);  // slight delay for smoother transition
     addHighlight(feature); // uses the feature directly now
   };
 
