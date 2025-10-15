@@ -10,7 +10,9 @@ import { MapProvider } from "@/context/MapContext";
 export const metadata = {
   title: "Airnav Map",
   description: "Interactive Air Navigation Map built with Next.js and Mapbox",
-  favicon: "@/public/airnav_sg.svg",
+  icons: {
+    icon: "/airnav_sg.svg",
+  }
 };
 
 export default function RootLayout({ children }) {
