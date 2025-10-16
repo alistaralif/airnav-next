@@ -1,7 +1,6 @@
 import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
 import Sidebar from "@/components/Sidebar/Sidebar";
-import SearchBar from "@/components/SearchBar/SearchBar";
 import MapboxContainer from "@/components/Mapbox/MapboxContainer";
 import FloatingLegend from "@/components/Mapbox/FloatingLegend";
 import { UIProvider } from "@/context/UIContext";
@@ -24,9 +23,8 @@ export default function RootLayout({ children }) {
             <div className="app-container">
               <Navbar />
               <Sidebar />
-              <SearchBar />
               <MapboxContainer />
-              <FloatingLegend />
+              {/* <FloatingLegend /> */}
               {children}
             </div>
           </MapProvider>

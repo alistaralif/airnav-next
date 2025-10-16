@@ -14,6 +14,9 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { COLORS } from "./colors.js";     // Color palette definitions for each data layer
 import { useMap } from "@/context/MapContext";
+import FeatureInfoPanel from "@/components/FeatureInfoPanel/FeatureInfoPanel";
+import SearchBar from "@/components/Searchbar/Searchbar.jsx";
+import FloatingLegend from "./FloatingLegend.jsx";
 
 // Mapbox public token for rendering the map
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -27,6 +30,8 @@ export default function MapboxContainer() {
   const mapContainerRef = useRef(null);   // HTML container for the map
   const [mapLoaded, setMapLoaded] = useState(false);  // Tracks if map has finished loading
   const { setMapInstance } = useMap();  // Context method to expose map instance to the context for access in other components globally
+  const [selectedFeature, setSelectedFeature] = useState(null); // Currently selected feature for info panel
+
 
 
   // Initializes the map only once upon mounting
@@ -151,7 +156,7 @@ export default function MapboxContainer() {
         });
 
         if (activePopup) activePopup.remove();
-        activePopup = new mapboxgl.Popup({ closeButton: false })
+        activePopup = new mapboxgl.Popup({ closeButton: true })
           .setLngLat(e.lngLat)
           .setHTML(html)
           .addTo(map);
@@ -195,7 +200,7 @@ export default function MapboxContainer() {
         });
 
         if (activePopup) activePopup.remove();
-        activePopup = new mapboxgl.Popup({ closeButton: false })
+        activePopup = new mapboxgl.Popup({ closeButton: true })
           .setLngLat(coords)
           .setHTML(html)
           .addTo(map);
@@ -209,6 +214,16 @@ export default function MapboxContainer() {
 
     // Expose map instance to context for access in other components
     setMapInstance(map);
+
+     // Attach click listener for any vector/geojson layers
+     map.on("click", (e) => {
+      // Query rendered features at click position
+      const features = map.queryRenderedFeatures(e.point);
+      if (!features.length) return;
+
+      const feature = features[0];
+      setSelectedFeature(feature); // open info panel
+    });
 
     // Cleanup on unmount
     return () => {
@@ -238,19 +253,32 @@ export default function MapboxContainer() {
         <div style="font-weight: 700; font-size: 0.95em; color: ${color}; margin-bottom: 3px;">
           ${title}
         </div>
-        <div style="font-size: 0.85em; color: #555;">
-          ${subtitle}
-        </div>
+        
       </div>`;
   }
 
+  // <div style="font-size: 0.85em; color: #555;">
+  //         ${subtitle}
+  //       </div>
+
   // Returns map container; uses full width (will be restricted by CSS later)
   return (
+    <>
+    <SearchBar onFeatureSelect={(f) => setSelectedFeature(f)} />
     <div
       ref={mapContainerRef}
       className="mapbox-container"
       style={{ width: "95vw", height: "100vh" }}
     />
+    {selectedFeature && (
+        <FeatureInfoPanel
+          feature={selectedFeature}
+          onClose={() => setSelectedFeature(null)}
+          onSave={(f) => console.log("Saved:", f)}
+        />
+      )}
+      {mapLoaded && <FloatingLegend map={mapRef.current} />}
+    </>
   );
 }
 

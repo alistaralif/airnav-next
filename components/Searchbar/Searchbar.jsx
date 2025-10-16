@@ -13,7 +13,7 @@ import * as turf from '@turf/turf';
  * Each result object follows the standard format:
  *   { type: "Feature", geometry: {...}, properties: {...} }
  */
-export default function SearchBar() {
+export default function SearchBar({ onFeatureSelect }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -100,6 +100,7 @@ export default function SearchBar() {
       map.flyTo({ center: [lon, lat], zoom: zoomLevel });
     }, 100);  // slight delay for smoother transition
     addHighlight(feature); // uses the feature directly now
+    onFeatureSelect?.(feature); // notify parent (MapboxContainer)
   };
 
     /**
