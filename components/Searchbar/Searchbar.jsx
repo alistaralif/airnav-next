@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useMap } from "@/context/MapContext";
 import { COLORS } from "../Mapbox/colors";
 import * as turf from '@turf/turf';
+import { showPopup } from "../Mapbox/popupHelpers";
 
 
 /**
@@ -101,6 +102,11 @@ export default function SearchBar({ onFeatureSelect }) {
     }, 100);  // slight delay for smoother transition
     addHighlight(feature); // uses the feature directly now
     onFeatureSelect?.(feature); // notify parent (MapboxContainer)
+
+    // Add popup after short delay (wait for map to settle)
+  //   setTimeout(() => {
+  //     showPopup(map, feature, [lon, lat]);
+  //   }, 500);
   };
 
     /**
@@ -117,6 +123,12 @@ export default function SearchBar({ onFeatureSelect }) {
         "search-highlight-fill",
         "search-highlight-line",
       ];
+
+      // Removes any existing popup
+      if (map.currentPopup) {
+        map.currentPopup.remove();
+        map.currentPopup = null;
+      }      
 
       // Removes each layer if it exists
       highlightLayers.forEach((layerId) => {

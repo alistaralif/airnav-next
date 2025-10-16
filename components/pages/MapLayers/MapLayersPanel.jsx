@@ -4,6 +4,7 @@
  * Displays toggles for the main dataset layers (FIRs, Navigation Warnings, Waypoints).
  * Each switch controls the corresponding Mapbox layer visibility via MapContext.
  */
+"use client";
 
 import { useMap } from "@/context/MapContext";
 

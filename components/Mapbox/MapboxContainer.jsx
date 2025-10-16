@@ -14,6 +14,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { COLORS } from "./colors.js";     // Color palette definitions for each data layer
 import { useMap } from "@/context/MapContext";
+import { showPopup } from "./popupHelpers";
 import FeatureInfoPanel from "@/components/FeatureInfoPanel/FeatureInfoPanel";
 import SearchBar from "@/components/Searchbar/Searchbar.jsx";
 import FloatingLegend from "./FloatingLegend.jsx";
@@ -47,19 +48,19 @@ export default function MapboxContainer() {
       zoom: 6,
     });
 
-    // Local variable for managing popups
-    let activePopup = null;
+    // // Local variable for managing popups
+    // let activePopup = null;
 
-    // Close popups when clicking elsewhere on the map
-    map.on("click", (e) => {
-      const features = map.queryRenderedFeatures(e.point, {     // Check if clicking on any interactive features
-        layers: ["waypoints", "firs-fill", "navWarnings-fill"],
-      });
-      if (!features.length && activePopup) {    // If not clicking on a feature, close any open popup
-        activePopup.remove();
-        activePopup = null;
-      }
-    });
+    // // Close popups when clicking elsewhere on the map
+    // map.on("click", (e) => {
+    //   const features = map.queryRenderedFeatures(e.point, {     // Check if clicking on any interactive features
+    //     layers: ["waypoints", "firs-fill", "navWarnings-fill"],
+    //   });
+    //   if (!features.length && activePopup) {    // If not clicking on a feature, close any open popup
+    //     activePopup.remove();
+    //     activePopup = null;
+    //   }
+    // });
 
     // When the map finishes loading, add all data sources and layers
     map.on("load", () => {
@@ -84,19 +85,23 @@ export default function MapboxContainer() {
 
       // Popup for FIR polygons
       map.on("click", "firs-fill", (e) => {
-        const props = e.features[0].properties;
-        const html = buildPopupHTML({
-          title: props?.name || "Unknown FIR",
-          subtitle: props?.subtitle || "",
-          color: COLORS.firOutline,
-        });
-
-        if (activePopup) activePopup.remove();      // Remove existing popup
-        activePopup = new mapboxgl.Popup({ closeButton: true })     // New popup
-          .setLngLat(e.lngLat)
-          .setHTML(html)
-          .addTo(map);
+        const feature = e.features[0];
+        showPopup(map, feature, e.lngLat);
       });
+
+      // map.on("click", "firs-fill", (e) => {
+      //   const props = e.features[0].properties;
+      //   const html = buildPopupHTML({
+      //     title: props?.name || "Unknown FIR",
+      //     color: COLORS.firOutline,
+      //   });
+
+      //   if (activePopup) activePopup.remove();      // Remove existing popup
+      //   activePopup = new mapboxgl.Popup({ closeButton: true })     // New popup
+      //     .setLngLat(e.lngLat)
+      //     .setHTML(html)
+      //     .addTo(map);
+      // });
 
       /** ---------------- Navigation Warnings ---------------- */
       map.addSource("navWarnings", {
@@ -148,19 +153,24 @@ export default function MapboxContainer() {
 
       // Popup for navigation warnings
       map.on("click", "navWarnings-fill", (e) => {
-        const props = e.features[0].properties;
-        const html = buildPopupHTML({
-          title: props?.name || "Unnamed Area",
-          subtitle: props?.subtitle || "",
-          color: COLORS[props?.category?.toLowerCase()] || "#888",
-        });
-
-        if (activePopup) activePopup.remove();
-        activePopup = new mapboxgl.Popup({ closeButton: true })
-          .setLngLat(e.lngLat)
-          .setHTML(html)
-          .addTo(map);
+        const feature = e.features[0];
+        showPopup(map, feature, e.lngLat);
       });
+      
+
+      // map.on("click", "navWarnings-fill", (e) => {
+      //   const props = e.features[0].properties;
+      //   const html = buildPopupHTML({
+      //     title: props?.name || "Unnamed Area",
+      //     color: COLORS[props?.category?.toLowerCase()] || "#888",
+      //   });
+
+      //   if (activePopup) activePopup.remove();
+      //   activePopup = new mapboxgl.Popup({ closeButton: true })
+      //     .setLngLat(e.lngLat)
+      //     .setHTML(html)
+      //     .addTo(map);
+      // });
 
       /** ---------------- Waypoints ---------------- */
       map.addSource("waypoints", {
@@ -191,20 +201,27 @@ export default function MapboxContainer() {
 
       // Popup for waypoints
       map.on("click", "waypoints", (e) => {
-        const coords = e.features[0].geometry.coordinates.slice();
-        const props = e.features[0].properties;
-        const html = buildPopupHTML({
-          title: props?.name || "Unnamed Waypoint",
-          subtitle: `${coords[1].toFixed(4)}, ${coords[0].toFixed(4)}`,
-          color: props?.dme === "true" ? COLORS.waypointDME : COLORS.waypoint,
-        });
-
-        if (activePopup) activePopup.remove();
-        activePopup = new mapboxgl.Popup({ closeButton: true })
-          .setLngLat(coords)
-          .setHTML(html)
-          .addTo(map);
+        const feature = e.features[0];
+        const coords = feature.geometry.coordinates.slice();
+        showPopup(map, feature, coords);
       });
+      
+
+      // map.on("click", "waypoints", (e) => {
+      //   const coords = e.features[0].geometry.coordinates.slice();
+      //   const props = e.features[0].properties;
+      //   const html = buildPopupHTML({
+      //     title: props?.name || "Unnamed Waypoint",
+      //     // subtitle: `${coords[1].toFixed(4)}, ${coords[0].toFixed(4)}`,
+      //     color: props?.dme === "true" ? COLORS.waypointDME : COLORS.waypoint,
+      //   });
+
+      //   if (activePopup) activePopup.remove();
+      //   activePopup = new mapboxgl.Popup({ closeButton: true })
+      //     .setLngLat(coords)
+      //     .setHTML(html)
+      //     .addTo(map);
+      // });
 
       setMapLoaded(true);
     });
@@ -236,32 +253,93 @@ export default function MapboxContainer() {
    * Builds styled popup HTML for map features.
    * @param {Object} info - Contains title, subtitle, and color.
    * @returns {string} - Styled HTML string for Mapbox popup.
-   */
-  function buildPopupHTML({ title, subtitle, color }) {
-    return `
-      <div style="
-        background: white;
-        border: 3px solid ${color};
-        border-radius: 10px;
-        padding: 10px 14px;
-        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
-        font-family: 'Inter', sans-serif;
-        color: #222;
-        min-width: 120px;
-        height: auto;
-        text-align: center;">
-        <div style="font-weight: 700; font-size: 0.95em; color: ${color}; margin-bottom: 3px;">
-          ${title}
-        </div>
-        
-      </div>`;
-  }
-
-  // <div style="font-size: 0.85em; color: #555;">
-  //         ${subtitle}
+  //  */
+  // function buildPopupHTML({ title, color }) {
+  //   return `
+  //     <div style="
+  //       background: white;
+  //       border: 3px solid ${color};
+  //       border-radius: 10px;
+  //       padding: 10px 14px;
+  //       box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+  //       font-family: 'Inter', sans-serif;
+  //       color: #222;
+  //       min-width: 120px;
+  //       height: auto;
+  //       text-align: center;">
+  //       <div style="font-weight: 700; font-size: 0.95em; color: ${color}; margin-bottom: 3px;">
+  //         ${title}
   //       </div>
+        
+  //     </div>`;
+  // }
 
-  // Returns map container; uses full width (will be restricted by CSS later)
+  /**
+   * Builds popup HTML dynamically for any GeoJSON feature.
+   * Automatically detects appropriate color based on layer/category/type.
+   */
+  // function buildPopupHTML(feature) {
+  //   const props = feature.properties || {};
+  //   const name = props.name || props.NAME || "Unnamed Feature";
+  //   const subtitle = props.subtitle || props.TYPE || props.type || "";
+  //   const category = props.category || props.CATEGORY || "";
+
+  //   // Choose popup border color
+  //   let color = COLORS.waypoint;  // Default color
+  //   if (props.dme === "true") color = COLORS.waypointDME;
+  //   else if (category === "prohibited") color = COLORS.prohibited;
+  //   else if (category === "restricted") color = COLORS.restricted;
+  //   else if (category === "danger") color = COLORS.danger;
+  //   else if (props.type === "FIR" || props.TYPE === "FIR") color = COLORS.firOutline;
+
+  //   return `
+  //     <div style="
+  //       background: white;
+  //       border: 3px solid ${color};
+  //       border-radius: 10px;
+  //       padding: 10px 14px;
+  //       box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+  //       font-family: 'Inter', sans-serif;
+  //       color: #222;
+  //       min-width: 140px;
+  //       text-align: center;">
+  //       <div style="font-weight: 700; font-size: 0.95em; color: ${color}; margin-bottom: 3px;">
+  //         ${name}
+  //       </div>
+  //       ${subtitle ? `<div style="font-size:0.85em; color:#444;">${subtitle}</div>` : ""}
+  //       ${category ? `<div style="font-size:0.8em; color:#777;">${category}</div>` : ""}
+  //     </div>
+  //   `;
+  // }
+
+  // /**
+  //  * Displays a Mapbox popup for any given feature and coordinate.
+  //  * Removes any active popup first before opening a new one.
+  //  */
+  // function showPopup(map, feature, lngLat) {
+  //   if (!map || !feature || !lngLat) return;
+
+  //   // Close previous popup if any
+  //   if (map.currentPopup) {
+  //     map.currentPopup.remove();
+  //     map.currentPopup = null;
+  //   }
+
+  //   const popupHTML = buildPopupHTML(feature);
+
+  //   const popup = new mapboxgl.Popup({
+  //     closeButton: true,
+  //     closeOnClick: true,
+  //     offset: 10,
+  //   })
+  //     .setLngLat(lngLat)
+  //     .setHTML(popupHTML)
+  //     .addTo(map);
+
+  //   map.currentPopup = popup;
+  // }
+
+
   return (
     <>
     <SearchBar onFeatureSelect={(f) => setSelectedFeature(f)} />
