@@ -14,8 +14,11 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
   if (!feature) return null;
 
   const props = feature.properties || {};
+//   console.log ("FeatureInfoPanel props:", props);
   const isPoint = feature.geometry?.type === "Point";
   const coords = isPoint ? feature.geometry.coordinates : null;
+  const warningType = props?.warning || null;
+
 
   return (
     <div className="feature-info-panel">
@@ -25,9 +28,11 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
 
       <h3 className="feature-title">{props.NAME || props.name || "Unnamed Feature"}</h3>
 
-      {props.subtitle && <p className="feature-subtitle">{props.subtitle}</p>}
+      {props.subtitle && <h4 className="feature-subtitle">{props.subtitle}</h4>}
+      <hr className="ruler"/>
+      {warningType && <h5>{warningType} AREA</h5>}
 
-      {/* Generic list of all other properties */}
+      {/* Generic list of all other properties
       <ul className="feature-props">
         {Object.entries(props)
           .filter(([key]) => !["NAME", "name", "subtitle"].includes(key))
@@ -37,12 +42,12 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
               <span>{String(value)}</span>
             </li>
           ))}
-      </ul>
+      </ul> */}
 
       {isPoint && coords && (
-        <p className="feature-coords">
-          Coordinates: {coords[1].toFixed(4)}, {coords[0].toFixed(4)}
-        </p>
+        <h5 className="feature-coords">
+          {coords[1].toFixed(4)}, {coords[0].toFixed(4)}
+        </h5>
       )}
 
       <div className="feature-actions">
