@@ -23,6 +23,7 @@ function Navbar() {
           className="nav-item"
           title={item.label}
           onClick={() => openSidebar(item.page)}
+          onMouseDown={() => openSidebar(item.page)}  // Same handler for mouse down for consistency
         >
           {item.icon}
         </div>

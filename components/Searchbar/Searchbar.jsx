@@ -28,9 +28,24 @@ export default function SearchBar({ onFeatureSelect }) {
       return;
     }
 
+    // Empty query clears results
     if (!query.trim()) {
       setResults([]);
       setShowDropdown(false);
+      removeHighlight();
+
+
+      // // Remove highlight layers and source
+      // if (map.getLayer("search-highlight")) map.removeLayer("search-highlight");
+      // if (map.getLayer("search-highlight-fill")) map.removeLayer("search-highlight-fill");
+      // if (map.getLayer("search-highlight-line")) map.removeLayer("search-highlight-line");
+      // if (map.getSource("search-highlight")) map.removeSource("search-highlight");
+
+      // // Close popup if open
+      // if (map.currentPopup) {
+      //   map.currentPopup.remove();
+      //   map.currentPopup = null;
+      // }
       return;
     }
 
