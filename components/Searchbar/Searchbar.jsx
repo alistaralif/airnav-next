@@ -166,7 +166,7 @@ export default function SearchBar({ onFeatureSelect }) {
 
     const type = feature.geometry.type;
     const fillColor = feature.properties?.fill || COLORS.fir;
-    console.log('Feature type:', type, 'Fill color:', fillColor);
+    // console.log('Feature type:', type, 'Fill color:', fillColor);
     
     // Different styles for Point vs Polygon/LineString
     if (feature.geometry.type === "Point") {

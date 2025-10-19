@@ -51,9 +51,9 @@ export default function MapboxContainer() {
     setMapInstance(map);
 
     // When the map finishes loading, add all data sources and layers
-    map.on("load", () => {
+    map.on("load", async () => {
       // Load each layer from the LAYERS configuration
-      LAYERS.forEach(async (layer) => {
+      for (const layer of LAYERS) {
         const response = await fetch(layer.url);
         const data = await response.json();
         
@@ -82,38 +82,52 @@ export default function MapboxContainer() {
             layout: layer.layout || {},
           });
         }
-    
-        // Add mapbox popup interaction
+        
+        
         map.on("click", layer.id, (e) => {
           const feature = e.features[0];
-          if (layer.id === "waypoints") {
-            const coords = feature.geometry.coordinates.slice();
-            showPopup(map, feature, coords);
-          } else {
-          showPopup(map, feature, e.lngLat);
-          console.log("map", map, "feature", feature, "e.lngLat", e.lngLat);
-          }
+          const coords =
+            layer.id === "waypoints"
+              ? feature.geometry.coordinates.slice()
+              : e.lngLat;
+    
+          showPopup(map, feature, coords);
+          setSelectedFeature(feature);
         });
-      });
+      }
 
+      // Popup on highlight layer
+      map.on("click", "search-highlight", (e) => {
+        const feature = e.features[0];
+        if (!feature) return;
+      
+        const coords =
+          feature.geometry.type === "Point"
+            ? feature.geometry.coordinates
+            : e.lngLat;
+      
+        showPopup(map, feature, coords);
+        setSelectedFeature(feature);
+      });
+      
+      map.on("click", "search-highlight-fill", (e) => {
+        const feature = e.features[0];
+        if (!feature) return;
+      
+        const coords =
+          feature.geometry.type === "Point"
+            ? feature.geometry.coordinates
+            : e.lngLat;
+      
+        showPopup(map, feature, coords);
+        setSelectedFeature(feature);
+      });
+      
       setMapLoaded(true);   // Mark map as loaded after all layers are added
     });
 
     // Assign map instance reference for global control
     mapRef.current = map;
-
-    // Expose map instance to context for access in other components
-    // setMapInstance(map);
-
-     // Attach click listener for any vector/geojson layers
-     map.on("click", (e) => {
-      // Query rendered features at click position
-      const features = map.queryRenderedFeatures(e.point);
-      if (!features.length) return;
-
-      const feature = features[0];
-      setSelectedFeature(feature); // open info panel
-    });
 
     // Cleanup on unmount
     return () => {
@@ -141,5 +155,3 @@ export default function MapboxContainer() {
     </>
   );
 }
-
-// Future improvement: replace hardcoded data: "/file.geojson" with fetch("/api/data?type=fir") once the backend is set up.
