@@ -31,7 +31,7 @@ function MapLayersPanel() {
           <input
             type="checkbox"
             id={item.key}
-            checked={layerVisibility[item.key]}
+            checked={!!layerVisibility[item.key]}
             onChange={() => toggleLayerVisibility(item.key)}
           />
           <label htmlFor={item.key} style={{ marginLeft: "8px" }}>

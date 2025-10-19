@@ -33,22 +33,10 @@ export default function SearchBar({ onFeatureSelect }) {
       setResults([]);
       setShowDropdown(false);
       removeHighlight();
-
-
-      // // Remove highlight layers and source
-      // if (map.getLayer("search-highlight")) map.removeLayer("search-highlight");
-      // if (map.getLayer("search-highlight-fill")) map.removeLayer("search-highlight-fill");
-      // if (map.getLayer("search-highlight-line")) map.removeLayer("search-highlight-line");
-      // if (map.getSource("search-highlight")) map.removeSource("search-highlight");
-
-      // // Close popup if open
-      // if (map.currentPopup) {
-      //   map.currentPopup.remove();
-      //   map.currentPopup = null;
-      // }
       return;
     }
 
+    // Search after a short delay (debounce)
     const timeout = setTimeout(async () => {
       try {
         const res = await fetch(`/api/search?query=${encodeURIComponent(query)}`);
@@ -117,11 +105,6 @@ export default function SearchBar({ onFeatureSelect }) {
     }, 100);  // slight delay for smoother transition
     addHighlight(feature); // uses the feature directly now
     onFeatureSelect?.(feature); // notify parent (MapboxContainer)
-
-    // Add popup after short delay (wait for map to settle)
-  //   setTimeout(() => {
-  //     showPopup(map, feature, [lon, lat]);
-  //   }, 500);
   };
 
     /**
