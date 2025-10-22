@@ -20,6 +20,9 @@ export default function SearchBar({ onFeatureSelect }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const suppressSearch = useRef(false);
   const { mapRef } = useMap();
+  const [highlightIndex, setHighlightIndex] = useState(-1);
+  const itemRefs = useRef([]); // refs to scroll dropdown items
+
 
   /** Fetches matching features whenever the query changes. */
   useEffect(() => {
@@ -50,6 +53,31 @@ export default function SearchBar({ onFeatureSelect }) {
 
     return () => clearTimeout(timeout);
   }, [query]);
+
+  /** Handles keyboard navigation in the dropdown. */
+  const handleKeyDown = (e) => {
+    if (!showDropdown || results.length === 0) return;
+  
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightIndex((prev) => (prev + 1) % results.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightIndex((prev) => (prev - 1 + results.length) % results.length);
+    } else if (e.key === "Enter" && highlightIndex >= 0) {
+      e.preventDefault();
+      handleSelect(results[highlightIndex]);
+    }
+  };
+
+  /** Scrolls the highlighted item into view. */
+  useEffect(() => {
+    if (highlightIndex < 0 || !itemRefs.current[highlightIndex]) return;
+    itemRefs.current[highlightIndex].scrollIntoView({
+      block: "nearest", // ensures minimal scroll
+      behavior: "smooth",
+    });
+  }, [highlightIndex]);  
 
   /**
    * Centers the map and highlights the selected feature.
@@ -268,6 +296,7 @@ export default function SearchBar({ onFeatureSelect }) {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => results.length && setShowDropdown(true)}
           onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+          onKeyDown={(e) => handleKeyDown(e)}
         />
 
         {showDropdown && results.length > 0 && (
@@ -275,7 +304,13 @@ export default function SearchBar({ onFeatureSelect }) {
             {results.map((feature, idx) => (
               <li
                 key={idx}
+                ref={(el) => (itemRefs.current[idx] = el)}
                 onMouseDown={() => handleSelect(feature)}
+                style={{
+                  backgroundColor: idx === highlightIndex ? "#e9f5ff" : "white",
+                  cursor: "pointer",
+                  padding: "4px 8px",
+                }}
               >
                 {/* Shows a readable label based on available property keys */}
                 <strong>
@@ -286,6 +321,8 @@ export default function SearchBar({ onFeatureSelect }) {
                 </strong>{" "}
                 <span style={{ color: "#666", fontSize: "0.8rem" }}>
                   ({feature.properties?.TYPE || feature.properties?.type || "Feature"})
+                  {/* To be fixed */}
+
                 </span>
               </li>
             ))}
