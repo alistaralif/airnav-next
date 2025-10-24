@@ -1,0 +1,43 @@
+adding new dataset:
+1. add .geojson into public/data
+2. update customisation in components/Mapbox/layerConfig.js and components/Mapbox/colors.js
+3. update zoom level in components/Searchbar/Searchbar.jsx
+
+.geojson format:
+*ensure polygons are closed
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon" / "LineString" / "Point",
+        "coordinates": [
+          [
+            [
+              103.80944444444444,
+              1.36
+            ],
+            ...,            // ensure polygons are closed
+            [
+              103.80944444444444,
+              1.36
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "name": "WSP3",
+        "subtitle": "(GND - 750FT)",
+        "type": "FIR" / "Navigational Warning" / "Waypoint" / "Sector" / "Airway" / "STAR" / "SID" / "Aerodrome" ,
+
+        // information specific to that type of data
+        "warning": "PROHIBITED",
+        "fill": "lightcoral",
+        "stroke": "firebrick",
+        "category": "prohibited",
+        "dme": false,
+      }
+    },
+  ]
+}

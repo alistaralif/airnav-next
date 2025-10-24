@@ -44,16 +44,19 @@ export const LAYERS = [
     label: "Nav Warnings",
     url: "/data/navWarnings.geojson",
     type: "fill",
+    categoryField: "category",  //  used by MapContext to filter geojson features
+    sublayers: [
+      { key: "prohibited", label: "Prohibited Area", color: COLORS.prohibited },
+      { key: "restricted", label: "Restricted Area", color: COLORS.restricted },
+      { key: "danger",     label: "Danger Area",     color: COLORS.danger },
+    ],
     paint: {
       "fill-color": [
         "match",
         ["get", "category"],
-        "prohibited",
-        COLORS.prohibited,
-        "restricted",
-        COLORS.restricted,
-        "danger",
-        COLORS.danger,
+        "prohibited", COLORS.prohibited,
+        "restricted", COLORS.restricted,
+        "danger",     COLORS.danger,
         "#cccccc",
       ],
       "fill-opacity": paintStyles.fillOpacity,
@@ -67,12 +70,9 @@ export const LAYERS = [
         "line-color": [
           "match",
           ["get", "category"],
-          "prohibited",
-          COLORS.prohibited,
-          "restricted",
-          COLORS.restricted,
-          "danger",
-          COLORS.danger,
+          "prohibited", COLORS.prohibited,
+          "restricted", COLORS.restricted,
+          "danger",     COLORS.danger,
           "#cccccc",
         ],
         "line-width": paintStyles.outlineWidth,
@@ -86,6 +86,11 @@ export const LAYERS = [
     label: "Waypoints",
     url: "/data/waypoints.geojson",
     type: "circle",
+    categoryField: "dme",  // used by MapContext to filter geojson features
+    sublayers: [
+      { key: "true",  label: "DME Waypoint",    color: COLORS.waypointDME },
+      { key: "false", label: "Waypoint", color: COLORS.waypoint },
+    ],
     paint: {
           "circle-color": [
             "match",

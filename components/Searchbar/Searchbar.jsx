@@ -84,7 +84,7 @@ export default function SearchBar({ onFeatureSelect }) {
    */
   const handleSelect = (feature) => {
     const map = mapRef.current;
-    if (!map || !feature.geometry) return;
+    if (!map || !feature) return;
 
     // Prevents a new fetch after selection
     suppressSearch.current = true;
