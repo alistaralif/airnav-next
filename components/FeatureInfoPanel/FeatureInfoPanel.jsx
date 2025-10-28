@@ -19,6 +19,7 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
   const isPoint = feature.geometry?.type === "Point";
   const coords = isPoint ? feature.geometry.coordinates : null;
   const warningType = props?.warning || null;
+  const sectorFIR = props?.["fir-label"] || null;
 
 
   return (
@@ -32,6 +33,7 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
       {props.subtitle && <h4 className="feature-subtitle">{props.subtitle}</h4>}
       <hr className="ruler"/>
       {warningType && <h5>{warningType} AREA</h5>}
+      {sectorFIR && <h5>{sectorFIR.toUpperCase()}</h5>}
 
       {/* Generic list of all other properties
       <ul className="feature-props">

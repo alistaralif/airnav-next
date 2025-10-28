@@ -27,7 +27,9 @@ export async function GET(request) {
   const files = [
     "data/FIRs.geojson", 
     "data/Waypoints.geojson", 
-    "data/NavWarnings.geojson"];
+    "data/NavWarnings.geojson",
+    "data/Sectors.geojson",
+  ];
 
   // Collect matching results here.
   const results = [];

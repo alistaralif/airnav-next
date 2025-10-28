@@ -44,7 +44,26 @@ export default function SearchBar({ onFeatureSelect }) {
       try {
         const res = await fetch(`/api/search?query=${encodeURIComponent(query)}`);
         const data = await res.json();
-        setResults(data.results || []);
+        // Enrich each feature with a metaType for display
+        const enriched = (data.results || []).map((f) => {
+          const props = f.properties || {};
+          return {
+            ...f,
+            metaType:
+              props.NAME?.includes("FIR") || props.name?.includes("FIR")
+                ? "FIR"
+                : props.category
+                ? "Navigational Warning"
+                : f.geometry?.type === "Point"
+                ? "Waypoint"
+                : props["fir-label"]
+                ? props["fir-label"].toUpperCase()
+                : "Feature",
+          };
+        });
+        
+        setResults(enriched);
+        // setResults(data.results || []);
         setShowDropdown(true);
       } catch (err) {
         console.error("Search failed:", err);
@@ -102,8 +121,9 @@ export default function SearchBar({ onFeatureSelect }) {
 
     const zoomLevel = feature.geometry.type === "Point" ? 10 :            // waypoints
                         feature.geometry.type === "LineString" ? 8 :      // routes
-                        feature.properties?.name.toLowerCase().includes('fir') ? 6    // FIRs
-                        : 9;   // default for other polygons i.e. NavWarnings
+                        feature.properties?.name.toLowerCase().includes('fir') ? 6  :  // FIRs
+                        feature.properties["fir-label"] ? 6 :
+                        9;   // default for other polygons i.e. NavWarnings
 
 
     // Extracts midpoint coordinates depending on geometry type
@@ -320,7 +340,7 @@ export default function SearchBar({ onFeatureSelect }) {
                    "Unnamed"}
                 </strong>{" "}
                 <span style={{ color: "#666", fontSize: "0.8rem" }}>
-                  ({feature.properties?.TYPE || feature.properties?.type || "Feature"})
+                  ({feature.metaType})
                   {/* To be fixed */}
 
                 </span>

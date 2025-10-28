@@ -171,6 +171,7 @@ export function MapProvider({ children }) {
             label: sub.label,
             color: sub.color,
             shape: isCircle? "circle" : "square",
+            flag: sub.flag?? null,
           });
         });
       } else {

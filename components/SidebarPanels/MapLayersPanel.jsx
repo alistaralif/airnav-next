@@ -13,9 +13,10 @@ function MapLayersPanel() {
 
   // Defines user-friendly labels for each layer
   const layerItems = [
-    { key: "firs", label: "FIR Boundaries" },
+    { key: "firs", label: "FIRs" },
     { key: "navWarnings", label: "Navigation Warnings" },
     { key: "waypoints", label: "Waypoints" },
+    { key: "sectors", label: "Sectors" },
   ];
 
   const legends = getLegends();
@@ -47,16 +48,29 @@ function MapLayersPanel() {
       <div className="legend-list">
         {legends.map((legend, idx) => (
           <div key={idx} className="legend-item" style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
-            <div
-              style={{
-                width: "14px",
-                height: "14px",
-                borderRadius: legend.shape === "circle" ? "50%" : "2px",
-                background: legend.color,
-                marginRight: "8px",
-                border: "1px solid rgba(0,0,0,0.2)",
-              }}
-            />
+            {legend.flag? 
+              <span
+                style={{
+                  fontSize: "1.1rem",
+                  marginRight: "6px",
+                  width: "16px",
+                  textAlign: "center",
+                }}
+              >
+                {legend.flag}
+              </span>
+            :
+              <div
+                style={{
+                  width: "14px",
+                  height: "14px",
+                  borderRadius: legend.shape === "circle" ? "50%" : "2px",
+                  background: legend.color,
+                  marginRight: "8px",
+                  border: "1px solid rgba(0,0,0,0.2)",
+                }}
+              />
+            }
             <span style={{ fontSize: "0.9rem", color: "#333" }}>{legend.label}</span>
           </div>
         ))}

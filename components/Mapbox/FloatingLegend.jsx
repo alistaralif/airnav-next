@@ -21,7 +21,6 @@ function FloatingLegend() {
     toggleCategoryVisibility,
   } = useMap();
   
-
   // Retrieve visible legends from map context
   const legends = getLegends();
 
@@ -62,6 +61,18 @@ function FloatingLegend() {
               : `Click to toggle ${legend.label} layer`
           }
         >
+          {legend.flag? 
+            <span
+              style={{
+                fontSize: "1.1rem",
+                marginRight: "6px",
+                width: "16px",
+                textAlign: "center",
+              }}
+            >
+              {legend.flag}
+            </span>
+           :
           <div
             style={{
               width: "14px",
@@ -71,7 +82,8 @@ function FloatingLegend() {
               marginRight: "8px",
               border: "1px solid rgba(0,0,0,0.2)",
             }}
-          />
+            />
+          }
           <span style={{ fontSize: "0.9rem", color: "#333" }}>{legend.label}</span>
         </div>
       ))}

@@ -1,7 +1,11 @@
 adding new dataset:
 1. add .geojson into public/data
 2. update customisation in components/Mapbox/layerConfig.js and components/Mapbox/colors.js
-3. update zoom level in components/Searchbar/Searchbar.jsx
+3. add layer layerItems in MapLayersPanel.jsx
+4. edit FeatureInfoPanel.jsx and popupHelpers.js
+5. add dataset into app/api/search/route.js
+6. update zoom level in components/Searchbar/Searchbar.jsx
+
 
 .geojson format:
 *ensure polygons are closed

@@ -19,7 +19,7 @@ export const LAYERS = [
   {
     id: "firs-fill",
     group: "firs",
-    label: "FIR Boundaries",
+    label: "FIRs",
     url: "/data/firs.geojson",
     type: "fill",
     paint: {
@@ -80,6 +80,45 @@ export const LAYERS = [
       layout: { visibility: VISIBILITY.navWarnings },
     },
   },
+  {
+    id: "sectors-fill",
+    group: "sectors",
+    label: "Sectors",
+    url: "/data/sectors.geojson",
+    type: "fill",
+    categoryField: "fir",   // used by MapContext to filter geojson features
+    sublayers: [
+      { key: "Singapore", label: "Singapore Sectors", flag: "🇸🇬"},
+      { key: "Kuala Lumpur", label: "Kuala Lumpur Sectors", flag: "🇲🇾" },
+      { key: "Jakarta", label: "Jakarta Sectors", flag: "🇮🇩" },
+      { key: "Ujung Pandang", label: "Ujung Pandang Sectors", flag: "🇮🇩" },
+      { key: "Bangkok", label: "Bangkok Sectors", flag: "🇹🇭" },
+      { key: "Ho Chi Minh", label: "Ho Chi Minh Sectors", flag: "🇻🇳" },
+    ],
+    paint: {
+      "fill-color": [
+        "coalesce",
+        ["get", "fill-color"],
+        COLORS.firOutline],
+      "fill-opacity": paintStyles.fillOpacity,
+    },
+    layout: { visibility: "none" },
+    outline: {
+      id: "sectors-outline",
+      group: "sectors",
+      type: "line",
+      paint: {
+        "line-color": 
+        // COLORS.firOutline,
+        [
+          "coalesce",
+          ["get", "fill-color"],
+          COLORS.firOutline],
+        "line-width": paintStyles.outlineWidth,
+      },
+      layout: { visibility: "none" },
+    },  
+  },  
   {
     id: "waypoints",
     group: "waypoints",
