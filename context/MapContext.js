@@ -183,7 +183,7 @@ export function MapProvider({ children }) {
             layer.paint?.["fill-color"] ||
             layer.paint?.["circle-color"] ||
             COLORS.highlight,
-          shape: layer.type === "circle" ? "circle" : "square",
+          shape: isCircle ? "circle" : "square",
         });
       }
     });
