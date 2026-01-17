@@ -12,7 +12,11 @@ export function buildPopupHTML(feature) {
   const category = props.category || props.CATEGORY || "";
   const isFir = props.name?.includes("FIR") || props.NAME?.includes("FIR") || false;
   const isSector = props["fir-label"] ? true : false;
-  
+  const isSid = props.type === "SID";
+  const isStar = props.type === "STAR";
+  const runway = props.runway || null;
+  const route = props.route || null;
+
   // Determine color based on feature properties
   let color = COLORS.waypoint;  // Default color
   if (props.dme === "true") color = COLORS.waypointDME;
@@ -21,6 +25,8 @@ export function buildPopupHTML(feature) {
   else if (category === "danger") color = COLORS.danger;
   else if (isFir) color = COLORS.firOutline;
   else if (isSector) color = props["fill-color"] || COLORS.firOutline;
+  else if (isSid) color = COLORS.sid;
+  else if (isStar) color = COLORS.star;
 
   return `
     <div style="

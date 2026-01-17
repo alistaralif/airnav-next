@@ -29,6 +29,9 @@ export async function GET(request) {
     "data/Waypoints.geojson", 
     "data/NavWarnings.geojson",
     "data/Sectors.geojson",
+    "data/SIDs.geojson",
+    "data/STARs.geojson",
+    // "data/ATSRoutes.geojson",  // Uncomment if ATS Routes data is available
   ];
 
   // Collect matching results here.

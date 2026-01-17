@@ -17,6 +17,9 @@ function MapLayersPanel() {
     { key: "navWarnings", label: "Navigation Warnings" },
     { key: "waypoints", label: "Waypoints" },
     { key: "sectors", label: "Sectors" },
+    { key: "sids", label: "SIDs" },
+    { key: "stars", label: "STARs" },
+    // { key: "atsRoutes", label: "ATS Routes" },
   ];
 
   const legends = getLegends();

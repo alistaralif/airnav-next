@@ -21,6 +21,11 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
   const warningType = props?.warning || null;
   const sectorFIR = props?.["fir-label"] || null;
 
+  // Routes
+  const isStarSid = props?.type === "SID" || props?.type === "STAR" || null;
+  const starsidRunway = props?.runway || null;
+  const starsidRoute = props?.route || null;
+
 
   return (
     <div className="feature-info-panel">
@@ -31,9 +36,17 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
       <h3 className="feature-title">{props.NAME || props.name || "Unnamed Feature"}</h3>
 
       {props.subtitle && <h4 className="feature-subtitle">{props.subtitle}</h4>}
+      {isStarSid && <h4 className="feature-subtitle">{props.type} - {props.runway}</h4>}
+
       <hr className="ruler"/>
+      
       {warningType && <h5>{warningType} AREA</h5>}
       {sectorFIR && <h5>{sectorFIR.toUpperCase()}</h5>}
+      {starsidRoute && (
+        <h5 className="feature-route">
+          {Array.isArray(starsidRoute) ? starsidRoute.join(", ") : starsidRoute.replace(/,/g, ", ")}
+        </h5>
+      )}
 
       {/* Generic list of all other properties
       <ul className="feature-props">

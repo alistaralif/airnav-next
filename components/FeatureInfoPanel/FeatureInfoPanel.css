@@ -24,6 +24,20 @@
     font-size: 0.9rem;
     color: #555;
   }
+
+  .feature-runway {
+    margin-top: 2px;
+    font-size: 0.9rem;
+    color: #333;
+  }
+  .feature-route {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: #555555;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+  }
   
   .feature-props {
     margin: 8px 0;

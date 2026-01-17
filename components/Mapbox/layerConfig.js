@@ -12,6 +12,9 @@ export const VISIBILITY = {
     firs: "visible",
     navWarnings: "none",
     waypoints: "none",
+    sids: "none",
+    stars: "none",
+    atsRoutes: "none",
   };
   
 // Layers configuration
@@ -146,25 +149,58 @@ export const LAYERS = [
     },
     layout: { visibility: VISIBILITY.waypoints },
   },
-  // {
-  //   id: "airways",
-  //   label: "Airways",
-  //   url: "/data/airways.geojson",
-  //   type: "line",
-  //   paint: {
-  //     "line-color": "#2c7bb6",
-  //     "line-width": 1.5,
-  //   },
-  // },
-  // {
-  //   id: "obstacles",
-  //   label: "Obstacles",
-  //   url: "/data/obstacles.geojson",
-  //   type: "symbol",
-  //   layout: {
-  //     "icon-image": "triangle-15",
-  //     "icon-size": 1.2,
-  //     "icon-allow-overlap": true,
-  //   },
-  // },
+  {
+    id: "sids",
+    group: "sids",
+    label: "SIDs",
+    url: "/data/SIDs.geojson",
+    type: "line",
+    categoryField: "runway",  // used by MapContext to filter geojson features
+    sublayers: [
+      { key: "RWY 02L", label: "RWY 02L SIDs", color: COLORS.sid },
+      { key: "RWY 02C", label: "RWY 02C SIDs", color: COLORS.sid },
+      { key: "RWY 02R", label: "RWY 02R SIDs", color: COLORS.sid },
+      { key: "RWY 20L", label: "RWY 20L SIDs", color: COLORS.sid },
+      { key: "RWY 20C", label: "RWY 20C SIDs", color: COLORS.sid },
+      { key: "RWY 20R", label: "RWY 20R SIDs", color: COLORS.sid },
+    ],
+    paint: {
+      "line-color": COLORS.sid,
+      "line-width": 2,
+      // "line-dasharray": [2, 1],
+    },
+    layout: { visibility: VISIBILITY.sids },
+  },
+  {
+    id: "stars",
+    group: "stars",
+    label: "STARs",
+    url: "/data/STARs.geojson",
+    type: "line",
+    categoryField: "runway",  // used by MapContext to filter geojson features
+    sublayers: [
+      { key: "RWY 02L/02C/02R", label: "RWY 02L/02C/02R STARs", color: COLORS.star },
+      { key: "RWY 20R/20C/20L", label: "RWY 20R/20C/20L STARs", color: COLORS.star },
+    ],
+    paint: {
+      "line-color": COLORS.star,
+      "line-width": 2,
+      // "line-dasharray": [2,1],
+    },
+    layout: { visibility: VISIBILITY.stars },
+  },
+  {
+    id: "atsRoutes",
+    group: "atsRoutes",
+    label: "ATS Routes",
+    url: "/data/atsRoutes.geojson",
+    type: "line",
+    categoryField: "ATS",  // used by MapContext to filter geojson features
+    sublayers: [],
+    paint: {
+      "line-color": COLORS.atsRoute,
+      "line-width": 2,
+    },
+    layout: { visibility: VISIBILITY.atsRoutes },
+  },
 ];

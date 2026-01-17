@@ -7,5 +7,8 @@ export const COLORS = {
     restricted: "darkorange",
     danger: "gold",
     highlight:"hsl(24, 100.00%, 50.00%)",
+    sid: "rgba(43, 116, 66, 0.8)",
+    star: "rgba(218, 92, 92, 0.8)",
+    atsRoute: "rgba(22, 77, 98, 0.8)",
   };
   

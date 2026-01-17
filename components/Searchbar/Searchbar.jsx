@@ -58,6 +58,10 @@ export default function SearchBar({ onFeatureSelect }) {
                 ? "Waypoint"
                 : props["fir-label"]
                 ? props["fir-label"].toUpperCase()
+                : props.type === "SID"
+                ? "SID"
+                : props.type === "STAR"
+                ? "STAR"
                 : "Feature",
           };
         });
@@ -120,7 +124,8 @@ export default function SearchBar({ onFeatureSelect }) {
     setShowDropdown(false);
 
     const zoomLevel = feature.geometry.type === "Point" ? 10 :            // waypoints
-                        feature.geometry.type === "LineString" ? 8 :      // routes
+                        (feature.properties?.type === "SID" || feature.properties?.type === "STAR") ? 7 :  // SIDs/STARs        
+                        // feature.geometry.type === "LineString" ? 8 :      // routes
                         feature.properties?.name.toLowerCase().includes('fir') ? 6  :  // FIRs
                         feature.properties["fir-label"] ? 6 :
                         9;   // default for other polygons i.e. NavWarnings
@@ -280,7 +285,73 @@ export default function SearchBar({ onFeatureSelect }) {
         if (!map.getLayer("search-highlight")) cancelAnimationFrame(animationFrame);
       });
     } 
-    else {    // Polygon or LineString
+    else if (feature.geometry.type === "LineString") {
+      // LineString with pulse animation like points
+      // Determine color based on feature type
+      const featureType = feature.properties?.type;
+      let lineColor;
+      
+      if (featureType === "SID") {
+        lineColor = COLORS.sid;
+      } else if (featureType === "STAR") {
+        lineColor = COLORS.star;
+      } else if (featureType === "ATS Route" || featureType === "atsRoute") {
+        lineColor = COLORS.atsRoute;
+      } else {
+        lineColor = feature.properties?.stroke || feature.properties?.["line-color"] || COLORS.highlight;
+      }
+      
+      map.addLayer({
+        id: "search-highlight",
+        type: "line",
+        source: "search-highlight",
+        paint: {
+          "line-color": lineColor,
+          "line-width": 3,
+          "line-opacity": 0.9,
+        },
+      });
+
+      // --- Slow, gentle pulse animation (3px ↔ 5px width) ---
+      let growing = true;
+      let width = 3;
+      let animationFrame;
+      const step = 0.05;
+      const minWidth = 3;
+      const maxWidth = 5;
+      const delayFrames = 3;
+      let frameCount = 0;
+
+      const animate = () => {
+        if (!map || !map.getLayer("search-highlight")) return;
+
+        frameCount++;
+        if (frameCount < delayFrames) {
+          animationFrame = requestAnimationFrame(animate);
+          return;
+        }
+        frameCount = 0;
+
+        width += growing ? step : -step;
+        if (width >= maxWidth) growing = false;
+        if (width <= minWidth) growing = true;
+
+        try {
+          map.setPaintProperty("search-highlight", "line-width", width);
+          animationFrame = requestAnimationFrame(animate);
+        } catch {
+          cancelAnimationFrame(animationFrame);
+        }
+      };
+
+      animationFrame = requestAnimationFrame(animate);
+
+      map.once("remove", () => cancelAnimationFrame(animationFrame));
+      map.once("styledata", () => {
+        if (!map.getLayer("search-highlight")) cancelAnimationFrame(animationFrame);
+      });
+    }
+    else {    // Polygon
       // Add fill layer first (below)
       map.addLayer({
         id: "search-highlight-fill",
