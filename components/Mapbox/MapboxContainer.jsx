@@ -52,48 +52,66 @@ export default function MapboxContainer() {
 
     // When the map finishes loading, add all data sources and layers
     map.on("load", async () => {
-      // Load each layer from the LAYERS configuration
+// Load each layer from the LAYERS configuration
       for (const layer of LAYERS) {
-        const response = await fetch(layer.url);
-        const data = await response.json();
-        
-        // Add source
-        map.addSource(layer.id, {
-          type: "geojson",
-          data,
-        });
-
-        // Add main layer
-        map.addLayer({
-          id: layer.id,
-          type: layer.type,
-          source: layer.id,
-          paint: layer.paint,
-          layout: layer.layout || {},
-        });
+        try {
+          console.log(`Fetching: ${layer.url}`);
+          const response = await fetch(layer.url);
+          
+          if (!response.ok) {
+            console.error(`❌ Failed to fetch ${layer.url}: ${response.status}`);
+            continue;
+          }
     
-        // Add outline layer if defined
-        if (layer.outline) {
+          const contentType = response.headers.get("content-type");
+          if (!contentType?.includes("application/json") && !contentType?.includes("application/geo+json")) {
+            console.error(`❌ Wrong content type for ${layer.url}: ${contentType}`);
+            continue;
+          }
+    
+          const data = await response.json();
+          console.log(`✅ Loaded ${layer.id}:`, data.features?.length, "features");
+    
+          // Add source
+          map.addSource(layer.id, {
+            type: "geojson",
+            data,
+          });
+    
+          // Add main layer
           map.addLayer({
-            id: layer.outline.id,
-            type: layer.outline.type,
+            id: layer.id,
+            type: layer.type,
             source: layer.id,
-            paint: layer.outline.paint,
+            paint: layer.paint,
             layout: layer.layout || {},
           });
+      
+          // Add outline layer if defined
+          if (layer.outline) {
+            map.addLayer({
+              id: layer.outline.id,
+              type: layer.outline.type,
+              source: layer.id,
+              paint: layer.outline.paint,
+              layout: layer.layout || {},
+            });
+          }
+          
+          
+          map.on("click", layer.id, (e) => {
+            const feature = e.features[0];
+            const coords =
+              layer.id === "waypoints"
+                ? feature.geometry.coordinates.slice()
+                : e.lngLat;
+      
+            showPopup(map, feature, coords);
+            setSelectedFeature(feature);
+          });
+        } catch (error) {
+          console.error(`❌ Error loading ${layer.id}:`, error);
         }
-        
-        
-        map.on("click", layer.id, (e) => {
-          const feature = e.features[0];
-          const coords =
-            layer.id === "waypoints"
-              ? feature.geometry.coordinates.slice()
-              : e.lngLat;
-    
-          showPopup(map, feature, coords);
-          setSelectedFeature(feature);
-        });
       }
 
       // Popup on highlight layer

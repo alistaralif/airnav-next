@@ -23,7 +23,7 @@ export const LAYERS = [
     id: "firs-fill",
     group: "firs",
     label: "FIRs",
-    url: "/data/firs.geojson",
+    url: "/data/FIRs.geojson",
     type: "fill",
     paint: {
       "fill-color": COLORS.fir,
@@ -45,7 +45,7 @@ export const LAYERS = [
     id: "navWarnings-fill",
     group: "navWarnings",
     label: "Nav Warnings",
-    url: "/data/navWarnings.geojson",
+    url: "/data/NavWarnings.geojson",
     type: "fill",
     categoryField: "category",  //  used by MapContext to filter geojson features
     sublayers: [
@@ -87,11 +87,11 @@ export const LAYERS = [
     id: "sectors-fill",
     group: "sectors",
     label: "Sectors",
-    url: "/data/sectors.geojson",
+    url: "/api/sectors",  // Changed from /data/Sectors.geojson
     type: "fill",
     categoryField: "fir",   // used by MapContext to filter geojson features
     sublayers: [
-      { key: "Singapore", label: "Singapore Sectors", flag: "🇸🇬"},
+      // Remove Singapore from public UI
       { key: "Kuala Lumpur", label: "Kuala Lumpur Sectors", flag: "🇲🇾" },
       { key: "Jakarta", label: "Jakarta Sectors", flag: "🇮🇩" },
       { key: "Ujung Pandang", label: "Ujung Pandang Sectors", flag: "🇮🇩" },
@@ -126,7 +126,7 @@ export const LAYERS = [
     id: "waypoints",
     group: "waypoints",
     label: "Waypoints",
-    url: "/data/waypoints.geojson",
+    url: "/data/Waypoints.geojson",
     type: "circle",
     categoryField: "dme",  // used by MapContext to filter geojson features
     sublayers: [
