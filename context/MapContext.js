@@ -13,7 +13,7 @@ import { LAYERS } from "../components/Mapbox/layerConfig.js";
 const MapContext = createContext();
 
 export function MapProvider({ children }) {
-  // Stores the actual Mapbox map instance (assigned after initialization)
+  // Stores the actual Mapbox map instance
   const mapRef = useRef(null);
 
   // Tracks layer visibility state for FIRs, navigation warnings, and waypoints
@@ -28,15 +28,6 @@ export function MapProvider({ children }) {
   useEffect(() => {
     const defaults = {};
     LAYERS.forEach((layer) => {
-      defaults[layer.group] = layer.layout?.visibility === "visible";
-    });
-    setLayerVisibility(defaults);
-  }, []);
-
-  useEffect(() => {
-    const defaults = {};
-    LAYERS.forEach((layer) => {
-      // Only initialize per group once
       if (!defaults[layer.group]) {
         const isVisible = layer.layout?.visibility === "visible";
         defaults[layer.group] = isVisible;
@@ -44,10 +35,10 @@ export function MapProvider({ children }) {
     });
     setLayerVisibility(defaults);
   }, []);
-  
+
   /**
-  Initialize categoryVisibility defaults (all true)
-  */
+   * Initialize categoryVisibility defaults (all true)
+   */
   useEffect(() => {
     const defaults = {};
     LAYERS.forEach((layer) => {
@@ -63,10 +54,39 @@ export function MapProvider({ children }) {
 
   /**
    * Assigns the map reference when MapboxContainer is initialized.
-   * @param {object} mapInstance - Mapbox GL map instance.
+   * @param {object} map - Mapbox GL map instance.
    */
-  const setMapInstance = (mapInstance) => {
-    mapRef.current = mapInstance;
+  const setMapInstance = (map) => {
+    mapRef.current = map;
+  };
+
+  /**
+   * Returns the current map instance.
+   * @returns {object|null} - Mapbox GL map instance or null.
+   */
+  const getMapInstance = () => {
+    return mapRef.current;
+  };
+
+  /**
+   * Reloads sectors layer data from the API.
+   * Call this after login/logout to refresh Singapore sectors.
+   */
+  const reloadSectorsLayer = async () => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    try {
+      const response = await fetch("/api/sectors");
+      const data = await response.json();
+
+      const source = map.getSource("sectors-fill");
+      if (source) {
+        source.setData(data);
+      }
+    } catch (error) {
+      console.error("Error reloading sectors:", error);
+    }
   };
 
   /**
@@ -76,8 +96,8 @@ export function MapProvider({ children }) {
   const toggleLayerVisibility = (layerGroup) => {
     const map = mapRef.current;
     if (!map) {
-    console.warn("⚠️ Map instance not ready yet.");
-    return;
+      console.warn("⚠️ Map instance not ready yet.");
+      return;
     }
 
     const newVisibility = !layerVisibility[layerGroup];
@@ -103,7 +123,6 @@ export function MapProvider({ children }) {
       [layerGroup]: newVisibility,
     }));
     console.log(`Toggling ${layerGroup}: ${newVisibility ? "visible" : "none"}`);
-
   };
 
   /**
@@ -115,8 +134,7 @@ export function MapProvider({ children }) {
   const toggleCategoryVisibility = (group, categoryKey) => {
     const map = mapRef.current;
     if (!map) return;
-  
-    // --- 1. Initialize nested visibility if missing ---
+
     setCategoryVisibility((prev) => {
       const current = prev[group] || {};
       const newVisibility = !current[categoryKey];
@@ -124,45 +142,39 @@ export function MapProvider({ children }) {
         ...prev,
         [group]: { ...current, [categoryKey]: newVisibility },
       };
-  
-      // --- 2. Rebuild filter for this layer ---
+
       const layerConfig = LAYERS.find((l) => l.group === group);
       if (!layerConfig?.categoryField) return updated;
-  
+
       const activeKeys = Object.entries(updated[group])
         .filter(([_, visible]) => visible)
         .map(([key]) => key);
-  
-      // Default: if all turned off, show nothing
+
       const filter =
         activeKeys.length > 0
           ? ["in", ["get", layerConfig.categoryField], ["literal", activeKeys]]
-          : ["==", ["get", layerConfig.categoryField], "__none__"]; // show none
-  
-      // Apply filter to fill + outline if present
+          : ["==", ["get", layerConfig.categoryField], "__none__"];
+
       map.setFilter(layerConfig.id, filter);
       if (layerConfig.outline?.id) {
         map.setFilter(layerConfig.outline.id, filter);
       }
-  
+
       return updated;
     });
   };
-  
-
 
   /**
    * Dynamically builds legend entries for currently visible layers.
    */
   const getLegends = () => {
     const legends = [];
-  
+
     LAYERS.forEach((layer) => {
       const isVisible = layerVisibility[layer.group];
       const isCircle = layer.type === "circle";
       if (!isVisible) return;
-  
-      // If the layer has defined sublayers, create entries for each
+
       if (layer.sublayers) {
         layer.sublayers.forEach((sub) => {
           legends.push({
@@ -170,12 +182,11 @@ export function MapProvider({ children }) {
             category: sub.key,
             label: sub.label,
             color: sub.color,
-            shape: isCircle? "circle" : "square",
-            flag: sub.flag?? null,
+            shape: isCircle ? "circle" : "square",
+            flag: sub.flag ?? null,
           });
         });
       } else {
-        // Normal single legend entry
         legends.push({
           group: layer.group,
           label: layer.label,
@@ -187,7 +198,7 @@ export function MapProvider({ children }) {
         });
       }
     });
-  
+
     return legends;
   };
 
@@ -196,6 +207,8 @@ export function MapProvider({ children }) {
       value={{
         mapRef,
         setMapInstance,
+        getMapInstance,
+        reloadSectorsLayer,
         layerVisibility,
         toggleLayerVisibility,
         categoryVisibility,
@@ -208,5 +221,4 @@ export function MapProvider({ children }) {
   );
 }
 
-// Hook for easy access to map context from any component
 export const useMap = () => useContext(MapContext);

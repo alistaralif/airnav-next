@@ -2,9 +2,9 @@ import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import MapboxContainer from "@/components/Mapbox/MapboxContainer";
-import FloatingLegend from "@/components/Mapbox/FloatingLegend";
 import { UIProvider } from "@/context/UIContext";
 import { MapProvider } from "@/context/MapContext";
+import AuthProvider from "@/context/AuthProvider";
 
 export const metadata = {
   title: "Airnav Map",
@@ -18,17 +18,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <UIProvider>
-          <MapProvider>
-            <div className="app-container">
-              <Navbar />
-              <Sidebar />
-              <MapboxContainer />
-              {/* <FloatingLegend /> */}
-              {children}
-            </div>
-          </MapProvider>
-        </UIProvider>
+        <AuthProvider>
+          <UIProvider>
+            <MapProvider>
+              <div className="app-container">
+                <Navbar />
+                <Sidebar />
+                <MapboxContainer />
+                {children}
+              </div>
+            </MapProvider>
+          </UIProvider>
+        </AuthProvider>
       </body>
     </html>
   );

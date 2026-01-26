@@ -91,7 +91,7 @@ export const LAYERS = [
     type: "fill",
     categoryField: "fir",   // used by MapContext to filter geojson features
     sublayers: [
-      // Remove Singapore from public UI
+      { key: "Singapore", label: "Singapore Sectors", flag: "🇸🇬" },
       { key: "Kuala Lumpur", label: "Kuala Lumpur Sectors", flag: "🇲🇾" },
       { key: "Jakarta", label: "Jakarta Sectors", flag: "🇮🇩" },
       { key: "Ujung Pandang", label: "Ujung Pandang Sectors", flag: "🇮🇩" },

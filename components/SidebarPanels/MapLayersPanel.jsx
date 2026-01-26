@@ -6,9 +6,11 @@
  */
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useMap } from "../../context/MapContext";
 
 function MapLayersPanel() {
+  const { data: session } = useSession();
   const { layerVisibility, toggleLayerVisibility, getLegends } = useMap();
 
   // Defines user-friendly labels for each layer
@@ -22,7 +24,13 @@ function MapLayersPanel() {
     // { key: "atsRoutes", label: "ATS Routes" },
   ];
 
-  const legends = getLegends();
+  // Filter legends to hide Singapore for unauthorized users
+  const legends = getLegends().filter((legend) => {
+    if (!session?.user && legend.category === "Singapore") {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <div className="maplayers-panel">

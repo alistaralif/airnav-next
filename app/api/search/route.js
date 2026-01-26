@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
+import { getServerSession } from "next-auth";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -9,19 +10,19 @@ export async function GET(request) {
     return Response.json({ results: [] });
   }
 
-  // Define files with their locations
+  // Check if user is authenticated
+  const session = await getServerSession();
+  const isAuthorized = !!session?.user;
+
+  console.log("Search API - Session:", session);
+  console.log("Search API - Authorized:", isAuthorized);
+
   const publicFiles = [
     "data/FIRs.geojson",
     "data/Waypoints.geojson",
     "data/NavWarnings.geojson",
     "data/SIDs.geojson",
     "data/STARs.geojson",
-    // "data/atsRoutes.geojson",
-  ];
-
-  // Private files (like Sectors) need special handling
-  const privateFiles = [
-    { path: "data/private/Sectors.geojson", filterSingapore: true },
   ];
 
   const results = [];
@@ -49,32 +50,30 @@ export async function GET(request) {
     }
   }
 
-  // Search private files (with filtering)
-  for (const file of privateFiles) {
-    try {
-      const filePath = path.join(process.cwd(), file.path);
-      const raw = await fs.readFile(filePath, "utf8");
-      const geojson = JSON.parse(raw);
+  // Search Sectors (with Singapore filtering for unauthorized users)
+  try {
+    const filePath = path.join(process.cwd(), "data/private/Sectors.geojson");
+    const raw = await fs.readFile(filePath, "utf8");
+    const geojson = JSON.parse(raw);
 
-      geojson.features.forEach((feature) => {
-        // Filter out Singapore sectors
-        if (file.filterSingapore && feature.properties.fir === "Singapore") {
-          return;
-        }
+    geojson.features.forEach((feature) => {
+      // Filter out Singapore sectors for unauthorized users
+      if (!isAuthorized && feature.properties.fir === "Singapore") {
+        return;
+      }
 
-        const name =
-          feature.properties.name ||
-          feature.properties.ident ||
-          feature.properties.title ||
-          "";
+      const name =
+        feature.properties.name ||
+        feature.properties.ident ||
+        feature.properties.title ||
+        "";
 
-        if (name.toLowerCase().includes(query)) {
-          results.push(feature);
-        }
-      });
-    } catch (error) {
-      console.error(`Error reading ${file.path}:`, error.message);
-    }
+      if (name.toLowerCase().includes(query)) {
+        results.push(feature);
+      }
+    });
+  } catch (error) {
+    console.error("Error reading Sectors:", error.message);
   }
 
   return Response.json({ results });

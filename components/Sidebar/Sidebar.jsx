@@ -8,6 +8,7 @@ import { FaTimes } from "react-icons/fa";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import { BsDisplay } from "react-icons/bs";
 import MapLayersPanel from "@/components/SidebarPanels/MapLayersPanel.jsx";
+import LoginPanel from "../SidebarPanels/LoginPanel.jsx";
 
 // import { map } from "leaflet";
 
@@ -20,6 +21,7 @@ function Sidebar() {
     mapLayers: "20vw",
     chartSearch: "30vw",
     customMap: "45vw",
+    login: "15vw",
   };
   
   // Keeps track of the last known sidebar width to prevent jumpy animations on close
@@ -65,6 +67,8 @@ function Sidebar() {
         return <p>Chart Search content here</p>;
       case "customMap":
         return <p>Custom Map content here</p>;
+      case "login":
+        return <LoginPanel />;
       default:
         return null;
     }

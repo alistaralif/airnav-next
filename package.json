@@ -11,14 +11,15 @@
   "dependencies": {
     "@turf/turf": "^7.2.0",
     "mapbox-gl": "^3.15.0",
-    "next": "15.5.4",
+    "next": "^15.5.9",
+    "next-auth": "^4.24.13",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-icons": "^5.5.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@flydotio/dockerfile": "^0.7.10",
+    "@flydotio/dockerfile": "^0.7.4",
     "eslint": "^9",
     "eslint-config-next": "15.5.4"
   }

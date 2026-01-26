@@ -1,0 +1,178 @@
+.container {
+  padding: 1rem;
+}
+
+.title {
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.875rem;
+}
+
+.field input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #0066cc;
+}
+
+.button {
+  padding: 0.75rem;
+  background: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.button:hover {
+  background: #0055aa;
+}
+
+.button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #cc0000;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: #ffe6e6;
+  border-radius: 4px;
+}
+
+.login-container {
+  padding: 0px;
+}
+
+.login-title {
+  margin-bottom: 10px;
+  /* font-size: 1.2rem; */
+  color: #333;
+}
+
+.login-subtitle {
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.login-field label {
+  font-weight: 500;
+  color: #333;
+  font-size: 1rem;
+}
+
+.login-field input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.login-field input:focus {
+  outline: none;
+  border-color: #0066cc;
+}
+
+.login-button {
+  padding: 0.75rem;
+  background: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.login-button:hover {
+  background: #0055aa;
+}
+
+.login-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.logout-button {
+  background: #cc0000;
+}
+
+.logout-button:hover {
+  background: #aa0000;
+}
+
+.login-error {
+  color: #cc0000;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: #ffe6e6;
+  border-radius: 4px;
+}
+
+.login-user-info {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.login-username,
+.login-role {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.login-features {
+  background: #e6ffe6;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.login-features p {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: #006600;
+}

@@ -4,6 +4,7 @@
 
 import { useUI } from "@/context/UIContext";
 import { FaLayerGroup, FaChartBar, FaMapMarkedAlt } from "react-icons/fa";
+import AuthButton from "./AuthButton";
 
 function Navbar() {
   const { openSidebar } = useUI();
@@ -23,13 +24,14 @@ function Navbar() {
           className="nav-item"
           title={item.label}
           onClick={() => openSidebar(item.page)}
-          onMouseDown={() => openSidebar(item.page)}  // Same handler for mouse down for consistency
+          onMouseDown={() => openSidebar(item.page)}
         >
           {item.icon}
         </div>
-        
       ))}
-      <img className="nav-logo" src="airnav_sg.svg"/>
+      <div className="nav-spacer" />
+      <AuthButton />
+      <img className="nav-logo" src="airnav_sg.svg" />
     </div>
   );
 }

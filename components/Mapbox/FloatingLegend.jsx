@@ -7,10 +7,12 @@
  */
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useUI } from "@/context/UIContext";
 import { useMap } from "@/context/MapContext";
 
 function FloatingLegend() {
+  const { data: session } = useSession();
   const { isSidebarOpen } = useUI();
   // const { getLegends } = useMap();
   const {
@@ -22,7 +24,13 @@ function FloatingLegend() {
   } = useMap();
   
   // Retrieve visible legends from map context
-  const legends = getLegends();
+  // Filter out Singapore for unauthorized users
+  const legends = getLegends().filter((legend) => {
+    if (!session?.user && legend.category === "Singapore") {
+      return false;
+    }
+    return true;
+  });
 
   // Hide legend if sidebar is open
   if (isSidebarOpen || legends.length === 0) return null;

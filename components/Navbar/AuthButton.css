@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  background: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.button:hover {
+  background: #0055aa;
+}
+
+.loading {
+  color: #666;
+}

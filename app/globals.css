@@ -49,10 +49,14 @@ body, html, #root {
 
 /* Each icon item */
 .nav-item {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   color: #cbd5e1;
   cursor: pointer;
   transition: transform 0.2s, color 0.2s;
+}
+
+.nav-spacer {
+  flex-grow: 1;
 }
 
 .nav-item:hover {
