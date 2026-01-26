@@ -170,6 +170,15 @@ export const LAYERS = [
       // "line-dasharray": [2, 1],
     },
     layout: { visibility: VISIBILITY.sids },
+    hitArea: {
+      id: "sids-hitarea",
+      type: "line",
+      paint: {
+        "line-color": "transparent",
+        "line-width": 50, // Much wider for easier clicking
+        "line-opacity": 0
+      }
+    }
   },
   {
     id: "stars",
@@ -188,6 +197,15 @@ export const LAYERS = [
       // "line-dasharray": [2,1],
     },
     layout: { visibility: VISIBILITY.stars },
+    hitArea: {
+      id: "stars-hitarea",
+      type: "line",
+      paint: {
+        "line-color": "transparent",
+        "line-width": 50, // Much wider for easier clicking
+        "line-opacity": 0
+      }
+    }
   },
   {
     id: "atsRoutes",

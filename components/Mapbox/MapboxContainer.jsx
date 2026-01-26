@@ -86,6 +86,32 @@ export default function MapboxContainer() {
             paint: layer.paint,
             layout: layer.layout || {},
           });
+
+          // Add hit area layer for easier clicking on thin lines
+          if (layer.hitArea) {
+            map.addLayer({
+              id: layer.hitArea.id,
+              type: layer.hitArea.type,
+              source: layer.id,
+              paint: layer.hitArea.paint,
+              layout: layer.layout || {},
+            });
+
+            // Add click handler for hit area
+            map.on("click", layer.hitArea.id, (e) => {
+              const feature = e.features[0];
+              showPopup(map, feature, e.lngLat);
+              setSelectedFeature(feature);
+            });
+
+            // Change cursor on hover for hit area
+            map.on("mouseenter", layer.hitArea.id, () => {
+              map.getCanvas().style.cursor = "pointer";
+            });
+            map.on("mouseleave", layer.hitArea.id, () => {
+              map.getCanvas().style.cursor = "";
+            });
+          }
       
           // Add outline layer if defined
           if (layer.outline) {

@@ -26,6 +26,19 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
   const starsidRunway = props?.runway || null;
   const starsidRoute = props?.route || null;
 
+  /**
+   * Formats route string/array into space-separated waypoints
+   */
+  function formatRoute(route) {
+    if (!route) return "";
+    try {
+      const parsed = typeof route === "string" ? JSON.parse(route) : route;
+      return Array.isArray(parsed) ? parsed.join(" ") : route;
+    } catch {
+      // Fallback: remove brackets and quotes, replace commas with spaces
+      return route.replace(/[\[\]"]/g, "").replace(/,\s*/g, " ");
+    }
+  }
 
   return (
     <div className="feature-info-panel">
@@ -44,7 +57,7 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
       {sectorFIR && <h5>{sectorFIR.toUpperCase()}</h5>}
       {starsidRoute && (
         <h5 className="feature-route">
-          {Array.isArray(starsidRoute) ? starsidRoute.join(", ") : starsidRoute.replace(/,/g, ", ")}
+          {formatRoute(starsidRoute)}
         </h5>
       )}
 
