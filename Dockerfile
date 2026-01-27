@@ -10,13 +10,13 @@ RUN npm ci
 FROM base AS builder
 WORKDIR /app
 
-# Accept build argument
-ARG NEXT_PUBLIC_MAPBOX_TOKEN
-ENV NEXT_PUBLIC_MAPBOX_TOKEN=$NEXT_PUBLIC_MAPBOX_TOKEN
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
+
+# Use build secret for Mapbox token
+RUN --mount=type=secret,id=NEXT_PUBLIC_MAPBOX_TOKEN \
+    NEXT_PUBLIC_MAPBOX_TOKEN=$(cat /run/secrets/NEXT_PUBLIC_MAPBOX_TOKEN) \
+    npm run build
 
 FROM base AS runner
 WORKDIR /app

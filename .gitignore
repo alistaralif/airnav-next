@@ -42,9 +42,6 @@ yarn-error.log*
 .env.local
 .env.production
 
-# Fly.io config (contains secrets)
-fly.toml
-
 # vercel
 .vercel
 
