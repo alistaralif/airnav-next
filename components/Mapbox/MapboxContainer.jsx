@@ -18,6 +18,7 @@ import FeatureInfoPanel from "@/components/FeatureInfoPanel/FeatureInfoPanel";
 import SearchBar from "@/components/Searchbar/Searchbar.jsx";
 import FloatingLegend from "./FloatingLegend.jsx";
 import { LAYERS } from "./layerConfig.js";
+import { createCircleGeoJSON, WSSS_COORDS } from "./circleUtils";
 
 // Mapbox public token for rendering the map
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -30,10 +31,8 @@ export default function MapboxContainer() {
   const mapRef = useRef(null);  // Actual Mapbox map instance
   const mapContainerRef = useRef(null);   // HTML container for the map
   const [mapLoaded, setMapLoaded] = useState(false);  // Tracks if map has finished loading
-  const { setMapInstance } = useMap();  // Context method to expose map instance to the context for access in other components globally
+  const { setMapInstance, radiusCircle } = useMap();  // Context method to expose map instance to the context for access in other components globally
   const [selectedFeature, setSelectedFeature] = useState(null); // Currently selected feature for info panel
-
-
 
   // Initializes the map only once upon mounting
   useEffect(() => {
@@ -179,6 +178,71 @@ export default function MapboxContainer() {
       mapRef.current = null;
     };
   }, []);
+
+  // Effect to update radius circle when radius or visibility changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.isStyleLoaded()) return;
+
+    const sourceId = "radius-circle-source";
+    const layerId = "radius-circle";
+    const outlineLayerId = "radius-circle-outline";
+
+    // Create or update the circle
+    const circleGeoJSON = createCircleGeoJSON(WSSS_COORDS, radiusCircle.radius);
+
+    if (map.getSource(sourceId)) {
+      // Update existing source
+      map.getSource(sourceId).setData(circleGeoJSON);
+    } else {
+      // Add new source and layers
+      map.addSource(sourceId, {
+        type: "geojson",
+        data: circleGeoJSON,
+      });
+
+      map.addLayer({
+        id: layerId,
+        type: "fill",
+        source: sourceId,
+        paint: {
+          "fill-color":"rgb(59, 130, 246)",
+          "fill-opacity": 0.06,
+        },
+        layout: {
+          visibility: radiusCircle.visible ? "visible" : "none",
+        },
+      });
+
+      map.addLayer({
+        id: outlineLayerId,
+        type: "line",
+        source: sourceId,
+        paint: {
+          "line-color":"rgb(59, 130, 246)",
+          "line-width": 2,
+          "line-dasharray": [],
+        },
+        layout: {
+          visibility: radiusCircle.visible ? "visible" : "none",
+        },
+      });
+    }
+
+    // Update visibility
+    if (map.getLayer(layerId)) {
+      map.setLayoutProperty(
+        layerId,
+        "visibility",
+        radiusCircle.visible ? "visible" : "none"
+      );
+      map.setLayoutProperty(
+        outlineLayerId,
+        "visibility",
+        radiusCircle.visible ? "visible" : "none"
+      );
+    }
+  }, [radiusCircle.radius, radiusCircle.visible]);
 
   return (
     <>

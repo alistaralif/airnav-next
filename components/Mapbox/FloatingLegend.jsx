@@ -14,12 +14,12 @@ import { useMap } from "@/context/MapContext";
 function FloatingLegend() {
   const { data: session } = useSession();
   const { isSidebarOpen } = useUI();
-  // const { getLegends } = useMap();
   const {
     getLegends,
     layerVisibility,
     categoryVisibility,
-    toggleLayerVisibility,
+    legendVisibility,
+    toggleLegendVisibility,
     toggleCategoryVisibility,
   } = useMap();
   
@@ -46,7 +46,7 @@ function FloatingLegend() {
             if (legend.category)
               toggleCategoryVisibility(legend.group, legend.category);
             else
-              toggleLayerVisibility(legend.group);
+              toggleLegendVisibility(legend.group);
           }}
           style={{
             display: "flex",
@@ -57,18 +57,13 @@ function FloatingLegend() {
               ? categoryVisibility?.[legend.group]?.[legend.category] ?? true
                 ? 1
                 : 0.4
-              : layerVisibility[legend.group]
+              : legendVisibility[legend.group]
               ? 1
               : 0.4,
             transition: "opacity 0.2s ease",
             paddingLeft: legend.category ? "0px" : "0", // indent sublayers
           }}
-          title={
-            legend.category
-              ? `Click to toggle ${legend.label}`
-              : `Click to toggle ${legend.label} layer`
-          }
-        >
+          title={`Click to toggle ${legend.label}`}>
           {legend.flag? 
             <span
               style={{

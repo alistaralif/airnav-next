@@ -10,5 +10,5 @@ export const COLORS = {
     sid: "rgba(43, 116, 66, 0.8)",
     star: "rgba(218, 92, 92, 0.8)",
     atsRoute: "rgba(22, 77, 98, 0.8)",
+    radiusCircle: "rgb(34, 59, 99)", // Blue for radius ring
   };
-  

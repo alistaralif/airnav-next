@@ -22,7 +22,7 @@ export const LAYERS = [
   {
     id: "firs-fill",
     group: "firs",
-    label: "FIRs",
+    label: "FIR",
     url: "/data/FIRs.geojson",
     type: "fill",
     paint: {

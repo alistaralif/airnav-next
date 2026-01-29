@@ -22,18 +22,47 @@ export function MapProvider({ children }) {
   // Tracks per-layer category visibility (for sublayers)
   const [categoryVisibility, setCategoryVisibility] = useState({});
 
+  // Tracks floating legend visibility for layers without sublayers
+  const [legendVisibility, setLegendVisibility] = useState({});
+
+  // Tracks radius circle state for drawing circles on the map
+  const [radiusCircle, setRadiusCircle] = useState({
+    center: null,
+    radius: 40,
+    visible: false,
+  });
+
+  /**
+   * Sets the visibility of the radius circle.
+   * @param {boolean} visible - Whether the circle should be visible.
+   */
+  const setRadiusCircleVisible = (visible) => {
+    setRadiusCircle((prev) => ({ ...prev, visible }));
+  };
+
+  /**
+   * Sets the radius of the circle.
+   * @param {number} radius - The radius in nautical miles.
+   */
+  const setRadiusCircleRadius = (radius) => {
+    setRadiusCircle((prev) => ({ ...prev, radius }));
+  };
+
   /**
    * Initializes default visibility state from LAYERS config.
    */
   useEffect(() => {
     const defaults = {};
+    const legendDefaults = {};
     LAYERS.forEach((layer) => {
       if (!defaults[layer.group]) {
         const isVisible = layer.layout?.visibility === "visible";
         defaults[layer.group] = isVisible;
+        legendDefaults[layer.group] = true; // Legend items start visible
       }
     });
     setLayerVisibility(defaults);
+    setLegendVisibility(legendDefaults);
   }, []);
 
   /**
@@ -165,6 +194,37 @@ export function MapProvider({ children }) {
   };
 
   /**
+   * Toggles legend visibility for layers without sublayers.
+   * This only affects the floating legend, not the main layer panel checkbox.
+   * @param {string} group - The layer group name.
+   */
+  const toggleLegendVisibility = (group) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    setLegendVisibility((prev) => {
+      const newVisibility = !prev[group];
+
+      // Find all layers belonging to this group and toggle their map visibility
+      const relatedLayers = LAYERS.filter((layer) => layer.group === group);
+      relatedLayers.forEach((layer) => {
+        const targetIds = [layer.id, layer.outline?.id].filter(Boolean);
+        targetIds.forEach((id) => {
+          if (map.getLayer(id)) {
+            map.setLayoutProperty(
+              id,
+              "visibility",
+              newVisibility ? "visible" : "none"
+            );
+          }
+        });
+      });
+
+      return { ...prev, [group]: newVisibility };
+    });
+  };
+
+  /**
    * Dynamically builds legend entries for currently visible layers.
    */
   const getLegends = () => {
@@ -213,7 +273,13 @@ export function MapProvider({ children }) {
         toggleLayerVisibility,
         categoryVisibility,
         toggleCategoryVisibility,
+        legendVisibility,
+        toggleLegendVisibility,
         getLegends,
+        radiusCircle,
+        setRadiusCircle,
+        setRadiusCircleVisible,
+        setRadiusCircleRadius,
       }}
     >
       {children}

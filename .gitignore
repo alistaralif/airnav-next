@@ -53,3 +53,4 @@ next-env.d.ts
 # --- Ignore all other JSON and GeoJSON files ---
 *.json
 *.geojson
+removed_features.txt
