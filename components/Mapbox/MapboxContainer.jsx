@@ -20,9 +20,6 @@ import FloatingLegend from "./FloatingLegend.jsx";
 import { LAYERS } from "./layerConfig.js";
 import { createCircleGeoJSON, WSSS_COORDS } from "./circleUtils";
 
-// Mapbox public token for rendering the map
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-
 // Mapbox style to be used
 const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 
@@ -38,6 +35,17 @@ export default function MapboxContainer() {
   useEffect(() => {
     // Prevent multiple initializations
     if (mapRef.current) return;
+
+    // Mapbox public token for rendering the map
+    const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+
+    if (!token) {
+      console.error("❌ Mapbox token is missing at runtime");
+      return;
+    }
+
+    mapboxgl.accessToken = token;
+    console.log("MAPBOX TOKEN IN CLIENT:", process.env.NEXT_PUBLIC_MAPBOX_TOKEN);
 
     // Create a new Mapbox GL map instance
     const map = new mapboxgl.Map({

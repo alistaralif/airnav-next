@@ -6,6 +6,9 @@
 app = 'airnav'
 primary_region = 'sin'
 
+[build.args]
+  NEXT_PUBLIC_MAPBOX_TOKEN = ""
+
 [http_service]
   internal_port = 3000
   force_https = true

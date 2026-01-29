@@ -35,9 +35,15 @@ export default function SearchBar({ onFeatureSelect }) {
     if (!query.trim()) {
       setResults([]);
       setShowDropdown(false);
-      removeHighlight();
+    
+      const map = mapRef.current;
+      if (map && map.isStyleLoaded()) {
+        removeHighlight();
+      }
+    
       return;
     }
+    
 
     // Search after a short delay (debounce)
     const timeout = setTimeout(async () => {
@@ -164,24 +170,62 @@ export default function SearchBar({ onFeatureSelect }) {
      * Removes all existing highlight layers and its source safely.
      * Must delete every layer referencing the source before deleting the source.
      */
+    // const removeHighlight = () => {
+    //   const map = mapRef.current;
+    //   if (!map) return;
+
+    //   // Lists all known highlight layer IDs used by this app
+    //   const highlightLayers = [
+    //     "search-highlight",
+    //     "search-highlight-fill",
+    //     "search-highlight-line",
+    //   ];
+
+    //   // Removes any existing popup
+    //   if (map.currentPopup) {
+    //     map.currentPopup.remove();
+    //     map.currentPopup = null;
+    //   }      
+
+    //   // Removes each layer if it exists
+    //   highlightLayers.forEach((layerId) => {
+    //     if (map.getLayer(layerId)) {
+    //       try {
+    //         map.removeLayer(layerId);
+    //       } catch (err) {
+    //         console.warn(`Could not remove layer ${layerId}:`, err);
+    //       }
+    //     }
+    //   });
+
+    //   // Removes the source only after all layers referencing it are gone
+    //   if (map.getSource("search-highlight")) {
+    //     try {
+    //       map.removeSource("search-highlight");
+    //     } catch (err) {
+    //       console.warn("Could not remove source 'search-highlight':", err);
+    //     }
+    //   }
+    // };
+
     const removeHighlight = () => {
       const map = mapRef.current;
-      if (!map) return;
-
-      // Lists all known highlight layer IDs used by this app
+    
+      // Early exit if map not ready
+      if (!map || !map.isStyleLoaded()) return;
+    
       const highlightLayers = [
         "search-highlight",
         "search-highlight-fill",
         "search-highlight-line",
       ];
-
-      // Removes any existing popup
+    
+      // Remove popup safely
       if (map.currentPopup) {
         map.currentPopup.remove();
         map.currentPopup = null;
-      }      
-
-      // Removes each layer if it exists
+      }
+    
       highlightLayers.forEach((layerId) => {
         if (map.getLayer(layerId)) {
           try {
@@ -191,8 +235,7 @@ export default function SearchBar({ onFeatureSelect }) {
           }
         }
       });
-
-      // Removes the source only after all layers referencing it are gone
+    
       if (map.getSource("search-highlight")) {
         try {
           map.removeSource("search-highlight");
@@ -201,13 +244,13 @@ export default function SearchBar({ onFeatureSelect }) {
         }
       }
     };
-
+    
   /**
    * Adds a temporary highlight layer using the full feature object.
    */
   const addHighlight = (feature) => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !map.isStyleLoaded()) return;
 
     // Clears any existing highlight before adding a new one
     removeHighlight();

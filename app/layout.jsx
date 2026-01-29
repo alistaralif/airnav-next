@@ -1,7 +1,8 @@
 import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
 import Sidebar from "@/components/Sidebar/Sidebar";
-import MapboxContainer from "@/components/Mapbox/MapboxContainer";
+// import MapboxContainer from "@/components/Mapbox/MapboxContainer"; // Next.js 16 SSR incompatible
+import MapboxClientWrapper from "@/components/Mapbox/MapboxClientWrapper";
 import { UIProvider } from "@/context/UIContext";
 import { MapProvider } from "@/context/MapContext";
 import AuthProvider from "@/context/AuthProvider";
@@ -24,7 +25,7 @@ export default function RootLayout({ children }) {
               <div className="app-container">
                 <Navbar />
                 <Sidebar />
-                <MapboxContainer />
+                <MapboxClientWrapper />
                 {children}
               </div>
             </MapProvider>
