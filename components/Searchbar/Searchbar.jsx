@@ -427,7 +427,7 @@ export default function SearchBar({ onFeatureSelect }) {
           className="searchbar-input"
           placeholder="Search..."
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => setQuery(e.target.value.toUpperCase())}
           onFocus={() => results.length && setShowDropdown(true)}
           onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
           onKeyDown={(e) => handleKeyDown(e)}
