@@ -5,6 +5,9 @@
 import { useUI } from "@/context/UIContext";
 import { FaLayerGroup, FaChartBar, FaMapMarkedAlt } from "react-icons/fa";
 import AuthButton from "./AuthButton";
+import { MdManageSearch } from "react-icons/md";
+import { TbMapSearch } from "react-icons/tb";
+
 
 function Navbar() {
   const { openSidebar } = useUI();
@@ -12,7 +15,8 @@ function Navbar() {
   // Defines available navigation options with icons and associated page keys.
   const navItems = [
     { icon: <FaLayerGroup />, page: "mapLayers", label: "Map Layers" },
-    { icon: <FaChartBar />, page: "chartSearch", label: "Chart Search" },
+    // { icon: <FaChartBar />, page: "chartSearch", label: "Chart Search" },
+    { icon: <TbMapSearch />, page: "chartSearch", label: "Chart Search" },
     { icon: <FaMapMarkedAlt />, page: "customMap", label: "Custom Map" },
   ];
 

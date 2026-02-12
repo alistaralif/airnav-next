@@ -50,7 +50,10 @@ yarn-error.log*
 next-env.d.ts
 
 
-# --- Ignore all other JSON and GeoJSON files ---
+# Ignore all other JSON and GeoJSON files
 *.json
 *.geojson
 removed_features.txt
+
+# PDFs
+*.pdf

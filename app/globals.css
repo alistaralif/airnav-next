@@ -44,7 +44,7 @@ body, html, #root {
   align-items: center;
   padding-top: 1rem;
   gap: 1rem;
-  z-index: 3; /* Highest layer */
+  z-index: 50; /* Highest layer */
 }
 
 /* Each icon item */
@@ -75,7 +75,7 @@ body, html, #root {
   background: #d0dbed;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   padding: 2rem;
-  z-index: 2; /* Above map, below sidebar */
+  z-index: 15; /* Above map, feature info panel, below sidebar */
   overflow-y: auto;
   /* display: flex; */
   /* border: 2px red solid; Temporary outline for debugging */
