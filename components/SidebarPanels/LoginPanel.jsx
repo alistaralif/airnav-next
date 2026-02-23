@@ -5,6 +5,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { useUI } from "@/context/UIContext";
 import { useMap } from "@/context/MapContext";
 import { useRouter } from "next/navigation";
+import { PiCheckCircleFill } from "react-icons/pi";
 import "./LoginPanel.css";
 
 export default function LoginPanel() {
@@ -71,8 +72,8 @@ export default function LoginPanel() {
           </p>
         </div>
         <div className="login-features">
-          <p>✅ Singapore sectors visible</p>
-          <p>✅ Full search access</p>
+          <p><PiCheckCircleFill className="check-mark"/> Singapore sectors visible</p>
+          <p><PiCheckCircleFill className="check-mark"/> Full search access</p>
         </div>
         <button 
           type="button"

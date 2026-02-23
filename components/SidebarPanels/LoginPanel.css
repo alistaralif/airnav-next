@@ -159,7 +159,7 @@
 
 .login-username,
 .login-role {
-  margin: 0.25rem 0;
+  margin: 0.25rem 0.25rem;
   font-size: 0.875rem;
   color: #333;
 }
@@ -169,10 +169,20 @@
   padding: 1rem;
   border-radius: 4px;
   margin-bottom: 1rem;
+
 }
 
 .login-features p {
-  margin: 0.25rem 0;
+  margin: 0.25rem 0.25rem;
   font-size: 0.875rem;
-  color: #006600;
+  color: #006600;  
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.check-mark {
+  font-size: 1.2rem;
+  margin-right: 0.4rem;
+  flex-shrink: 0;
 }
