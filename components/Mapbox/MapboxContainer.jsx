@@ -59,8 +59,11 @@ export default function MapboxContainer() {
 
     // When the map finishes loading, add all data sources and layers
     map.on("load", async () => {
-// Load each layer from the LAYERS configuration
-      for (const layer of LAYERS) {
+      // Sort layers by zIndex before adding
+      const sortedLayers = [...LAYERS].sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0));
+
+      // Load each layer from the LAYERS configuration
+      for (const layer of sortedLayers) {
         try {
           console.log(`Fetching: ${layer.url}`);
           const response = await fetch(layer.url);

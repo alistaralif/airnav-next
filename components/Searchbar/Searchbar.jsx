@@ -68,6 +68,8 @@ export default function SearchBar({ onFeatureSelect }) {
                 ? "SID"
                 : props.type === "STAR"
                 ? "STAR"
+                : props.type === "ATS Route"
+                ? "ATS Route"
                 : "Feature",
           };
         });
@@ -131,7 +133,7 @@ export default function SearchBar({ onFeatureSelect }) {
 
     const zoomLevel = feature.geometry.type === "Point" ? 10 :            // waypoints
                         (feature.properties?.type === "SID" || feature.properties?.type === "STAR") ? 7 :  // SIDs/STARs        
-                        // feature.geometry.type === "LineString" ? 8 :      // routes
+                        feature.geometry.type === "LineString" ? 6 :      // airways
                         feature.properties?.name.toLowerCase().includes('fir') ? 6  :  // FIRs
                         feature.properties["fir-label"] ? 6 :
                         9;   // default for other polygons i.e. NavWarnings

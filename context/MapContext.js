@@ -226,11 +226,14 @@ export function MapProvider({ children }) {
 
   /**
    * Dynamically builds legend entries for currently visible layers.
+   * Layers are sorted by zIndex to match map rendering order.
    */
   const getLegends = () => {
     const legends = [];
+    
+    const sortedLayers = [...LAYERS].sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0));
 
-    LAYERS.forEach((layer) => {
+    sortedLayers.forEach((layer) => {
       const isVisible = layerVisibility[layer.group];
       const isCircle = layer.type === "circle";
       if (!isVisible) return;

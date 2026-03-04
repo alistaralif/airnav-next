@@ -14,8 +14,8 @@ export function buildPopupHTML(feature) {
   const isSector = props["fir-label"] ? true : false;
   const isSid = props.type === "SID";
   const isStar = props.type === "STAR";
+  const isAirway = props.type === 'ATS Route';
   const runway = props.runway || null;
-  const route = props.route || null;
 
   // Determine color based on feature properties
   let color = COLORS.waypoint;  // Default color
@@ -27,6 +27,7 @@ export function buildPopupHTML(feature) {
   else if (isSector) color = props["fill-color"] || COLORS.firOutline;
   else if (isSid) color = COLORS.sid;
   else if (isStar) color = COLORS.star;
+  else if (isAirway) color = COLORS.atsRoute;
 
   return `
     <div style="

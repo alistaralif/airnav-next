@@ -33,7 +33,7 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
     if (!route) return "";
     try {
       const parsed = typeof route === "string" ? JSON.parse(route) : route;
-      return Array.isArray(parsed) ? parsed.join(" ") : route;
+      return Array.isArray(parsed) ? parsed.join(" - ") : route;
     } catch {
       // Fallback: remove brackets and quotes, replace commas with spaces
       return route.replace(/[\[\]"]/g, "").replace(/,\s*/g, " ");

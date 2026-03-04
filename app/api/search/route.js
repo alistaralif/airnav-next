@@ -23,6 +23,7 @@ export async function GET(request) {
     "data/NavWarnings.geojson",
     "data/SIDs.geojson",
     "data/STARs.geojson",
+    "data/atsRoutes.geojson",
   ];
 
   const results = [];
@@ -39,6 +40,7 @@ export async function GET(request) {
           feature.properties.name ||
           feature.properties.ident ||
           feature.properties.title ||
+          feature.properties.type ||
           "";
 
         if (name.toLowerCase().includes(query)) {

@@ -24,11 +24,12 @@ function MapLayersPanel() {
   // Defines user-friendly labels for each layer
   const layerItems = [
     { key: "firs", label: "FIRs" },
-    { key: "navWarnings", label: "Navigation Warnings" },
-    { key: "waypoints", label: "Waypoints" },
     { key: "sectors", label: "Sectors" },
+    { key: "navWarnings", label: "Navigation Warnings" },
+    { key: "atsRoutes", label: "ATS Routes" },
     { key: "sids", label: "SIDs" },
     { key: "stars", label: "STARs" },
+    { key: "waypoints", label: "Waypoints" },
   ];
 
   // Filter legends to hide Singapore for unauthorized users

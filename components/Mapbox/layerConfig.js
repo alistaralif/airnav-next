@@ -14,7 +14,7 @@ export const VISIBILITY = {
     waypoints: "none",
     sids: "none",
     stars: "none",
-    atsRoutes: "none",
+    atsRoutes: "visible",
   };
   
 // Layers configuration
@@ -25,6 +25,7 @@ export const LAYERS = [
     label: "FIR",
     url: "/data/FIRs.geojson",
     type: "fill",
+    zIndex: 0,  // Lowest - renders first (bottom)
     paint: {
       "fill-color": COLORS.fir,
       "fill-opacity": paintStyles.fillOpacityLight,
@@ -41,12 +42,83 @@ export const LAYERS = [
       layout: { visibility: VISIBILITY.firs },
     },
   },
+  
+  {
+    id: "atsRoutes",
+    group: "atsRoutes",
+    label: "ATS Routes",
+    url: "/data/atsRoutes.geojson",
+    type: "line",
+    zIndex: 10,  // Higher - renders on top
+    categoryField: "ATS",  // used by MapContext to filter geojson features
+    sublayers: [
+      { label: "ATS Route", color: COLORS.atsRoute }
+
+    ],
+    color: COLORS.atsRoute,
+    paint: {
+      "line-color": COLORS.atsRoute,
+      "line-width": 1,
+      // "line-dasharray": [15, 1],
+    },
+    layout: { visibility: VISIBILITY.atsRoutes },
+    hitArea: {
+      id: "ats-hitarea",
+      type: "line",
+      paint: {
+        "line-color": "transparent",
+        "line-width": 30, // Much wider for easier clicking
+        "line-opacity": 0
+      }
+    }
+  },
+  {
+    id: "sectors-fill",
+    group: "sectors",
+    label: "Sectors",
+    url: "/api/sectors",  // Changed from /data/Sectors.geojson
+    type: "fill",
+    zIndex: 1,
+    categoryField: "fir",   // used by MapContext to filter geojson features
+    sublayers: [
+      { key: "Singapore", label: "Singapore Sectors", flag: "🇸🇬" },
+      { key: "Kuala Lumpur", label: "Kuala Lumpur Sectors", flag: "🇲🇾" },
+      { key: "Jakarta", label: "Jakarta Sectors", flag: "🇮🇩" },
+      { key: "Ujung Pandang", label: "Ujung Pandang Sectors", flag: "🇮🇩" },
+      { key: "Bangkok", label: "Bangkok Sectors", flag: "🇹🇭" },
+      { key: "Ho Chi Minh", label: "Ho Chi Minh Sectors", flag: "🇻🇳" },
+    ],
+    paint: {
+      "fill-color": [
+        "coalesce",
+        ["get", "fill-color"],
+        COLORS.firOutline],
+      "fill-opacity": paintStyles.fillOpacity,
+    },
+    layout: { visibility: "none" },
+    outline: {
+      id: "sectors-outline",
+      group: "sectors",
+      type: "line",
+      paint: {
+        "line-color": 
+        // COLORS.firOutline,
+        [
+          "coalesce",
+          ["get", "fill-color"],
+          COLORS.firOutline],
+        "line-width": paintStyles.outlineWidth,
+      },
+      layout: { visibility: "none" },
+    },  
+  },  
   {
     id: "navWarnings-fill",
     group: "navWarnings",
     label: "Nav Warnings",
     url: "/data/NavWarnings.geojson",
     type: "fill",
+    zIndex: 5,
     categoryField: "category",  //  used by MapContext to filter geojson features
     sublayers: [
       { key: "prohibited", label: "Prohibited Area", color: COLORS.prohibited },
@@ -84,77 +156,12 @@ export const LAYERS = [
     },
   },
   {
-    id: "sectors-fill",
-    group: "sectors",
-    label: "Sectors",
-    url: "/api/sectors",  // Changed from /data/Sectors.geojson
-    type: "fill",
-    categoryField: "fir",   // used by MapContext to filter geojson features
-    sublayers: [
-      { key: "Singapore", label: "Singapore Sectors", flag: "🇸🇬" },
-      { key: "Kuala Lumpur", label: "Kuala Lumpur Sectors", flag: "🇲🇾" },
-      { key: "Jakarta", label: "Jakarta Sectors", flag: "🇮🇩" },
-      { key: "Ujung Pandang", label: "Ujung Pandang Sectors", flag: "🇮🇩" },
-      { key: "Bangkok", label: "Bangkok Sectors", flag: "🇹🇭" },
-      { key: "Ho Chi Minh", label: "Ho Chi Minh Sectors", flag: "🇻🇳" },
-    ],
-    paint: {
-      "fill-color": [
-        "coalesce",
-        ["get", "fill-color"],
-        COLORS.firOutline],
-      "fill-opacity": paintStyles.fillOpacity,
-    },
-    layout: { visibility: "none" },
-    outline: {
-      id: "sectors-outline",
-      group: "sectors",
-      type: "line",
-      paint: {
-        "line-color": 
-        // COLORS.firOutline,
-        [
-          "coalesce",
-          ["get", "fill-color"],
-          COLORS.firOutline],
-        "line-width": paintStyles.outlineWidth,
-      },
-      layout: { visibility: "none" },
-    },  
-  },  
-  {
-    id: "waypoints",
-    group: "waypoints",
-    label: "Waypoints",
-    url: "/data/Waypoints.geojson",
-    type: "circle",
-    categoryField: "dme",  // used by MapContext to filter geojson features
-    sublayers: [
-      { key: "true",  label: "DME Waypoint",    color: COLORS.waypointDME },
-      { key: "false", label: "Waypoint", color: COLORS.waypoint },
-    ],
-    paint: {
-          "circle-color": [
-            "match",
-            ["get", "dme"],
-            "false",
-            COLORS.waypoint,
-            "true",
-            COLORS.waypointDME,
-            "#cccccc",
-          ],
-          "circle-radius": 4,
-          "circle-stroke-width": 1,
-          "circle-stroke-color": COLORS.waypoint,
-    },
-    layout: { visibility: VISIBILITY.waypoints },
-  },
-  {
     id: "sids",
     group: "sids",
     label: "SIDs",
     url: "/data/SIDs.geojson",
     type: "line",
+    zIndex: 15,     // higher than ats routes
     categoryField: "runway",  // used by MapContext to filter geojson features
     sublayers: [
       { key: "RWY 02L", label: "RWY 02L SIDs", color: COLORS.sid },
@@ -186,6 +193,7 @@ export const LAYERS = [
     label: "STARs",
     url: "/data/STARs.geojson",
     type: "line",
+    zIndex: 15,     // higher than ats routes
     categoryField: "runway",  // used by MapContext to filter geojson features
     sublayers: [
       { key: "RWY 02L/02C/02R", label: "RWY 02L/02C/02R STARs", color: COLORS.star },
@@ -208,17 +216,31 @@ export const LAYERS = [
     }
   },
   {
-    id: "atsRoutes",
-    group: "atsRoutes",
-    label: "ATS Routes",
-    url: "/data/atsRoutes.geojson",
-    type: "line",
-    categoryField: "ATS",  // used by MapContext to filter geojson features
-    sublayers: [],
+    id: "waypoints",
+    group: "waypoints",
+    label: "Waypoints",
+    url: "/data/Waypoints.geojson",
+    type: "circle",
+    zIndex: 20,  // Highest - always on top
+    categoryField: "dme",  // used by MapContext to filter geojson features
+    sublayers: [
+      { key: "true",  label: "DME Waypoint",  color: COLORS.waypointDME },
+      { key: "false", label: "Waypoint",      color: COLORS.waypoint },
+    ],
     paint: {
-      "line-color": COLORS.atsRoute,
-      "line-width": 2,
+          "circle-color": [
+            "match",
+            ["get", "dme"],
+            "false",
+            COLORS.waypoint,
+            "true",
+            COLORS.waypointDME,
+            "#cccccc",
+          ],
+          "circle-radius": 4,
+          "circle-stroke-width": 1,
+          "circle-stroke-color": COLORS.waypoint,
     },
-    layout: { visibility: VISIBILITY.atsRoutes },
+    layout: { visibility: VISIBILITY.waypoints },
   },
 ];
