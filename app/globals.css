@@ -167,6 +167,94 @@ body, html, #root {
   z-index: 0; /* Base layer */
 }
 
+/* Measurement Tool Styles - Higher specificity */
+.measurement-controls {
+  /* width: 5vw; */
+  /* min-width: 100px; */
+  position: fixed;
+  top: 5%;
+  left: 7%;
+  padding: 0px;
+  /* transform: translateY(-50%); */
+  z-index: 10 !important; /* Higher than other elements */
+  /* display: flex;
+  flex-direction: column;
+  align-items: flex-start; */
+  /* gap: 8px; */
+  /* border: 1px solid green; Temporary outline for debugging */
+}
+
+.measurement-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  min-width: 140px;
+  width: 100%;
+  height: 46px;
+  transform: translateY(-50%);
+}
+
+.measurement-button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.measurement-button.active {
+  background: #1e293b; /* Dark slate tone for visibility */
+  color: white;
+  /* color: #cbd5e1; */
+  /* background: #ef4444; */
+  /* border-color: #ef4444; */
+  /* border-color: white; */
+}
+
+.measurement-info {
+  background: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e5e7eb;
+  width: 100%;
+  min-width: 140px;
+  transform: translateY(-30%);
+}
+
+.measurement-value {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.measurement-value.nm {
+  font-size: 16px;
+  color: #1e293b;
+  /* color: #dc2626; */
+  margin-bottom: 4px;
+}
+
+.measurement-value strong {
+  font-weight: 700;
+}
+
+/* .measurement-hint {
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #6b7280;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+} */
+
 /* Temporary outline for layout testing */
 .mapbox-container::after {
   content: "Airnav by ATMRI";
@@ -186,7 +274,7 @@ body, html, #root {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
   border: 2px solid rgba(0, 0, 0, 0.1) !important;
   background: white !important;
-  padding: 0 !important;  /* since your inner HTML already has padding */
+  padding: 0 !important;  /* since inner HTML already has padding */
   overflow: shown !important; /* ensures rounded corners do not clip the inner HTML */
 }
 

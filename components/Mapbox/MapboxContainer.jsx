@@ -19,6 +19,8 @@ import SearchBar from "@/components/Searchbar/Searchbar.jsx";
 import FloatingLegend from "./FloatingLegend.jsx";
 import { LAYERS } from "./layerConfig.js";
 import { createCircleGeoJSON, WSSS_COORDS } from "./circleUtils";
+import MeasurementTool from "./MeasurementTool";
+import MeasurementButton from "./MeasurementButton";
 
 // Mapbox style to be used
 const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
@@ -30,6 +32,8 @@ export default function MapboxContainer() {
   const [mapLoaded, setMapLoaded] = useState(false);  // Tracks if map has finished loading
   const { setMapInstance, radiusCircle } = useMap();  // Context method to expose map instance to the context for access in other components globally
   const [selectedFeature, setSelectedFeature] = useState(null); // Currently selected feature for info panel
+  const [measurementActive, setMeasurementActive] = useState(false);
+  const [measurement, setMeasurement] = useState(null);
 
   // Initializes the map only once upon mounting
   useEffect(() => {
@@ -258,11 +262,23 @@ export default function MapboxContainer() {
   return (
     <>
     <SearchBar onFeatureSelect={(f) => setSelectedFeature(f)} />
+    <MeasurementButton
+      isActive={measurementActive}
+      onClick={() => setMeasurementActive(!measurementActive)}
+      measurement={measurement}
+    />
     <div
       ref={mapContainerRef}
       className="mapbox-container"
       style={{ width: "95vw", height: "100vh" }}
     />
+    {mapLoaded && (
+      <MeasurementTool
+        map={mapRef.current}
+        isActive={measurementActive}
+        onMeasurementChange={setMeasurement}
+      />
+    )}
     {selectedFeature && (
         <FeatureInfoPanel
           feature={selectedFeature}
