@@ -14,7 +14,7 @@ export const VISIBILITY = {
     waypoints: "none",
     sids: "none",
     stars: "none",
-    atsRoutes: "visible",
+    atsRoutes: "none",
   };
   
 // Layers configuration
