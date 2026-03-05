@@ -49,7 +49,7 @@ export default function MapboxContainer() {
     }
 
     mapboxgl.accessToken = token;
-    console.log("MAPBOX TOKEN IN CLIENT:", process.env.NEXT_PUBLIC_MAPBOX_TOKEN);
+    // console.log("MAPBOX TOKEN IN CLIENT:", process.env.NEXT_PUBLIC_MAPBOX_TOKEN);
 
     // Create a new Mapbox GL map instance
     const map = new mapboxgl.Map({
@@ -69,7 +69,7 @@ export default function MapboxContainer() {
       // Load each layer from the LAYERS configuration
       for (const layer of sortedLayers) {
         try {
-          console.log(`Fetching: ${layer.url}`);
+          // console.log(`Fetching: ${layer.url}`);
           const response = await fetch(layer.url);
           
           if (!response.ok) {
