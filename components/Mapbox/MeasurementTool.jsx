@@ -1,6 +1,6 @@
 /**
  * MeasurementTool.jsx
- * 
+ *
  * A ruler tool that allows users to place two pins on the map
  * and displays the distance between them in NM and KM.
  */
@@ -11,6 +11,24 @@ import { formatDistance, NM_THRESHOLD, KM_THRESHOLD } from "./distanceUtils";
 // Conversion constants
 const KM_TO_NM = 0.539957;
 const EARTH_RADIUS_KM = 6371;
+
+const LINE_SOURCE_ID = "measurement-line-source";
+const LINE_LAYER_ID = "measurement-line";
+const LABEL_SOURCE_ID = "measurement-label-source";
+const LABEL_NM_LAYER_ID = "measurement-label-nm";
+const LABEL_KM_LAYER_ID = "measurement-label-km";
+
+const EMPTY_LINE_FEATURE = {
+  type: "Feature",
+  geometry: { type: "LineString", coordinates: [] },
+  properties: {},
+};
+
+const EMPTY_LABEL_FEATURE = {
+  type: "Feature",
+  geometry: { type: "Point", coordinates: [0, 0] },
+  properties: { nmDistance: "", kmDistance: "" },
+};
 
 /**
  * Calculate distance between two points using Haversine formula
@@ -50,30 +68,118 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
   const markersRef = useRef([]);
   const pointsRef = useRef([]);
 
-  const updateLine = useCallback(() => {
+  const ensureLayers = useCallback(() => {
+    if (!map || !map.isStyleLoaded()) return false;
+
+    if (!map.getSource(LINE_SOURCE_ID)) {
+      map.addSource(LINE_SOURCE_ID, {
+        type: "geojson",
+        data: EMPTY_LINE_FEATURE,
+      });
+    }
+
+    if (!map.getLayer(LINE_LAYER_ID)) {
+      map.addLayer({
+        id: LINE_LAYER_ID,
+        type: "line",
+        source: LINE_SOURCE_ID,
+        layout: {
+          "line-cap": "round",
+          "line-join": "round",
+        },
+        paint: {
+          "line-color": "#1e293b",
+          "line-width": 2,
+          "line-opacity": 0.95,
+          "line-dasharray": [5, 2],
+        },
+      });
+    }
+
+    if (!map.getSource(LABEL_SOURCE_ID)) {
+      map.addSource(LABEL_SOURCE_ID, {
+        type: "geojson",
+        data: EMPTY_LABEL_FEATURE,
+      });
+    }
+
+    if (!map.getLayer(LABEL_NM_LAYER_ID)) {
+      map.addLayer({
+        id: LABEL_NM_LAYER_ID,
+        type: "symbol",
+        source: LABEL_SOURCE_ID,
+        layout: {
+          "text-field": ["get", "nmDistance"],
+          "text-size": 14,
+          "text-offset": [0, -1.5],
+          "text-anchor": "center",
+          "text-font": ["DIN Pro Bold", "Arial Unicode MS Bold"],
+          "text-allow-overlap": true,
+          "text-ignore-placement": true,
+        },
+        paint: {
+          "text-color": "rgba(30, 41, 59, 0.9)",
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 2,
+        },
+      });
+    }
+
+    if (!map.getLayer(LABEL_KM_LAYER_ID)) {
+      map.addLayer({
+        id: LABEL_KM_LAYER_ID,
+        type: "symbol",
+        source: LABEL_SOURCE_ID,
+        layout: {
+          "text-field": ["get", "kmDistance"],
+          "text-size": 12,
+          "text-offset": [0, 1.5],
+          "text-anchor": "center",
+          "text-font": ["DIN Pro Medium", "Arial Unicode MS Regular"],
+          "text-allow-overlap": true,
+          "text-ignore-placement": true,
+        },
+        paint: {
+          "text-color": "#6b7280",
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 2,
+        },
+      });
+    }
+
+    return true;
+  }, [map]);
+
+  const bringToFront = useCallback(() => {
     if (!map) return;
+    if (map.getLayer(LINE_LAYER_ID)) map.moveLayer(LINE_LAYER_ID);
+    if (map.getLayer(LABEL_NM_LAYER_ID)) map.moveLayer(LABEL_NM_LAYER_ID);
+    if (map.getLayer(LABEL_KM_LAYER_ID)) map.moveLayer(LABEL_KM_LAYER_ID);
+  }, [map]);
+
+  const updateLine = useCallback(() => {
+    if (!map || !ensureLayers()) return;
 
     const points = pointsRef.current;
 
-    // Update or create line source
     const lineData = {
       type: "Feature",
       geometry: {
         type: "LineString",
         coordinates: points.length >= 2 ? points : [],
       },
+      properties: {},
     };
 
-    if (map.getSource("measurement-line")) {
-      map.getSource("measurement-line").setData(lineData);
+    const lineSource = map.getSource(LINE_SOURCE_ID);
+    if (lineSource) {
+      lineSource.setData(lineData);
     }
 
-    // Calculate and display distance if we have 2 points
     if (points.length === 2) {
       const { km, nm } = calculateDistance(points[0], points[1]);
       const midpoint = getMidpoint(points[0], points[1]);
 
-      // Update label
       const labelData = {
         type: "Feature",
         geometry: {
@@ -86,29 +192,27 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
         },
       };
 
-      if (map.getSource("measurement-label")) {
-        map.getSource("measurement-label").setData(labelData);
+      const labelSource = map.getSource(LABEL_SOURCE_ID);
+      if (labelSource) {
+        labelSource.setData(labelData);
       }
 
-      // Callback with measurement data
       if (onMeasurementChange) {
         onMeasurementChange({ km, nm, points });
       }
     } else {
-      // Clear label when less than 2 points
-      if (map.getSource("measurement-label")) {
-        map.getSource("measurement-label").setData({
-          type: "Feature",
-          geometry: { type: "Point", coordinates: [0, 0] },
-          properties: { nmDistance: "", kmDistance: "" },
-        });
+      const labelSource = map.getSource(LABEL_SOURCE_ID);
+      if (labelSource) {
+        labelSource.setData(EMPTY_LABEL_FEATURE);
       }
     }
-  }, [map, onMeasurementChange]);
+
+    bringToFront();
+  }, [map, ensureLayers, bringToFront, onMeasurementChange]);
 
   const addPoint = useCallback(
     (lngLat) => {
-      if (!map || pointsRef.current.length >= 2) return;
+      if (!map || pointsRef.current.length >= 2 || !ensureLayers()) return;
 
       const coords = [lngLat.lng, lngLat.lat];
       pointsRef.current.push(coords);
@@ -144,7 +248,6 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
       const markerIndex = markersRef.current.length;
       markersRef.current.push(marker);
 
-      // Update line when marker is dragged
       marker.on("drag", () => {
         const newLngLat = marker.getLngLat();
         pointsRef.current[markerIndex] = [newLngLat.lng, newLngLat.lat];
@@ -153,167 +256,57 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
 
       updateLine();
     },
-    [map, updateLine]
+    [map, ensureLayers, updateLine]
   );
 
   const clearMeasurement = useCallback(() => {
-    // Remove markers
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
     pointsRef.current = [];
 
-    // Clear line and label
-    if (map) {
-      if (map.getSource("measurement-line")) {
-        map.getSource("measurement-line").setData({
-          type: "Feature",
-          geometry: { type: "LineString", coordinates: [] },
-        });
-      }
-      if (map.getSource("measurement-label")) {
-        map.getSource("measurement-label").setData({
-          type: "Feature",
-          geometry: { type: "Point", coordinates: [0, 0] },
-          properties: { nmDistance: "", kmDistance: "" },
-        });
-      }
+    if (map && ensureLayers()) {
+      const lineSource = map.getSource(LINE_SOURCE_ID);
+      if (lineSource) lineSource.setData(EMPTY_LINE_FEATURE);
+
+      const labelSource = map.getSource(LABEL_SOURCE_ID);
+      if (labelSource) labelSource.setData(EMPTY_LABEL_FEATURE);
     }
 
     if (onMeasurementChange) {
       onMeasurementChange(null);
     }
-  }, [map, onMeasurementChange]);
+  }, [map, ensureLayers, onMeasurementChange]);
 
-  // Setup map sources and layers
   useEffect(() => {
     if (!map) return;
 
     const setupLayers = () => {
-      // Add line source and layer
-      if (!map.getSource("measurement-line")) {
-        map.addSource("measurement-line", {
-          type: "geojson",
-          data: {
-            type: "Feature",
-            geometry: { type: "LineString", coordinates: [] },
-          },
-        });
-      }
-
-      // Add or move line layer to top
-      if (!map.getLayer("measurement-line")) {
-        map.addLayer({
-          id: "measurement-line",
-          type: "line",
-          source: "measurement-line",
-          paint: {
-            "line-color": "rgba(30, 41, 59, 1)",
-            "line-width": 3,
-            "line-dasharray": [2, 2],
-          },
-        });
-      } else {
-        // Move to top if it already exists
-        map.moveLayer("measurement-line");
-      }
-
-      // Add label source
-      if (!map.getSource("measurement-label")) {
-        map.addSource("measurement-label", {
-          type: "geojson",
-          data: {
-            type: "Feature",
-            geometry: { type: "Point", coordinates: [0, 0] },
-            properties: { nmDistance: "", kmDistance: "" },
-          },
-        });
-      }
-
-      // NM label (above line)
-      if (!map.getLayer("measurement-label-nm")) {
-        map.addLayer({
-          id: "measurement-label-nm",
-          type: "symbol",
-          source: "measurement-label",
-          layout: {
-            "text-field": ["get", "nmDistance"],
-            "text-size": 14,
-            "text-offset": [0, -1.5],
-            "text-anchor": "center",
-            "text-font": ["DIN Pro Bold", "Arial Unicode MS Bold"],
-            "text-allow-overlap": true,
-            "text-ignore-placement": true,
-          },
-          paint: {
-            "text-color": "rgba(30, 41, 59, 0.9)",
-            "text-halo-color": "#ffffff",
-            "text-halo-width": 2,
-          },
-        });
-      } else {
-        map.moveLayer("measurement-label-nm");
-      }
-
-      // KM label (below line)
-      if (!map.getLayer("measurement-label-km")) {
-        map.addLayer({
-          id: "measurement-label-km",
-          type: "symbol",
-          source: "measurement-label",
-          layout: {
-            "text-field": ["get", "kmDistance"],
-            "text-size": 12,
-            "text-offset": [0, 1.5],
-            "text-anchor": "center",
-            "text-font": ["DIN Pro Medium", "Arial Unicode MS Regular"],
-            "text-allow-overlap": true,
-            "text-ignore-placement": true,
-          },
-          paint: {
-            "text-color": "#6b7280",
-            "text-halo-color": "#ffffff",
-            "text-halo-width": 2,
-          },
-        });
-      } else {
-        map.moveLayer("measurement-label-km");
-      }
+      if (!ensureLayers()) return;
+      updateLine();
+      bringToFront();
     };
 
-    // Check if style is already loaded
     if (map.isStyleLoaded()) {
       setupLayers();
     } else {
       map.once("load", setupLayers);
     }
 
-    // Handle style changes (if user switches map style)
     map.on("style.load", setupLayers);
-
-    // Also move layers to top when tool becomes active
-    const bringToFront = () => {
-      if (map.getLayer("measurement-line")) map.moveLayer("measurement-line");
-      if (map.getLayer("measurement-label-nm")) map.moveLayer("measurement-label-nm");
-      if (map.getLayer("measurement-label-km")) map.moveLayer("measurement-label-km");
-    };
-
-    // Listen for when other layers are added, to ensure measurement stays on top
     map.on("sourcedata", bringToFront);
 
     return () => {
       map.off("style.load", setupLayers);
       map.off("sourcedata", bringToFront);
     };
-  }, [map]);
+  }, [map, ensureLayers, updateLine, bringToFront]);
 
-  // Handle click events when tool is active
   useEffect(() => {
     if (!map) return;
 
     const handleClick = (e) => {
       if (!isActive) return;
 
-      // If we already have 2 points, clear and start fresh
       if (pointsRef.current.length >= 2) {
         clearMeasurement();
       }
@@ -323,9 +316,9 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
 
     map.on("click", handleClick);
 
-    // Change cursor when active
     if (isActive) {
       map.getCanvas().style.cursor = "crosshair";
+      bringToFront();
     } else {
       map.getCanvas().style.cursor = "";
     }
@@ -334,14 +327,13 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
       map.off("click", handleClick);
       map.getCanvas().style.cursor = "";
     };
-  }, [map, isActive, addPoint, clearMeasurement]);
+  }, [map, isActive, addPoint, clearMeasurement, bringToFront]);
 
-  // Cleanup when tool is deactivated
   useEffect(() => {
     if (!isActive) {
       clearMeasurement();
     }
   }, [isActive, clearMeasurement]);
 
-  return null; // This component doesn't render anything directly
+  return null;
 }
