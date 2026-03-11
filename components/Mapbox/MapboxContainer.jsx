@@ -261,7 +261,7 @@ export default function MapboxContainer() {
 
   return (
     <>
-    <SearchBar onFeatureSelect={(f) => setSelectedFeature(f)} />
+    {mapLoaded && <SearchBar onFeatureSelect={(f) => setSelectedFeature(f)} />}
     <MeasurementButton
       isActive={measurementActive}
       onClick={() => setMeasurementActive(!measurementActive)}

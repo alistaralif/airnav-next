@@ -22,10 +22,17 @@ export default function SearchBar({ onFeatureSelect }) {
   const { mapRef } = useMap();
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const itemRefs = useRef([]); // refs to scroll dropdown items
+  const isInitialMount = useRef(true); // track initial mount
 
 
   /** Fetches matching features whenever the query changes. */
   useEffect(() => {
+    // Skip the very first render to avoid map style warnings
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     if (suppressSearch.current) {
       suppressSearch.current = false;
       return;
@@ -36,9 +43,20 @@ export default function SearchBar({ onFeatureSelect }) {
       setResults([]);
       setShowDropdown(false);
     
+      // Delay highlight removal to ensure map is ready
       const map = mapRef.current;
-      if (map && map.isStyleLoaded()) {
-        removeHighlight();
+      if (map) {
+        const tryRemoveHighlight = () => {
+          if (map.isStyleLoaded()) {
+            removeHighlight();
+          }
+        };
+        
+        if (map.isStyleLoaded()) {
+          removeHighlight();
+        } else {
+          map.once('style.load', tryRemoveHighlight);
+        }
       }
     
       return;

@@ -212,7 +212,7 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
 
   const addPoint = useCallback(
     (lngLat) => {
-      if (!map || pointsRef.current.length >= 2 || !ensureLayers()) return;
+    //   if (!map || !ensureLayers()) return;
 
       const coords = [lngLat.lng, lngLat.lat];
       pointsRef.current.push(coords);
