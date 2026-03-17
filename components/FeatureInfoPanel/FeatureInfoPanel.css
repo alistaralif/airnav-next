@@ -63,11 +63,11 @@
   }
   
   .save-btn {
-    background: #0078d7;
-    color: #fff;
+    background: transparent;
+    color: #000;
     border: none;
-    padding: 5px 10px;
-    font-size: 0.85rem;
+    padding: 5px 5px;
+    font-size: 1rem;
     border-radius: 4px;
     cursor: pointer;
   }

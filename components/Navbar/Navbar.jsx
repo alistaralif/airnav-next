@@ -3,21 +3,20 @@
 "use client";
 
 import { useUI } from "@/context/UIContext";
-import { FaLayerGroup, FaChartBar, FaMapMarkedAlt } from "react-icons/fa";
+import { FaLayerGroup } from "react-icons/fa";
+import { PiBookmarksSimpleFill } from "react-icons/pi";
 import AuthButton from "./AuthButton";
-import { MdManageSearch } from "react-icons/md";
 import { TbMapSearch } from "react-icons/tb";
 
 
-function Navbar() {
+export default function Navbar() {
   const { openSidebar } = useUI();
 
   // Defines available navigation options with icons and associated page keys.
   const navItems = [
     { icon: <FaLayerGroup />, page: "mapLayers", label: "Map Layers" },
-    // { icon: <FaChartBar />, page: "chartSearch", label: "Chart Search" },
     { icon: <TbMapSearch />, page: "chartSearch", label: "Chart Search" },
-    { icon: <FaMapMarkedAlt />, page: "customMap", label: "Custom Map" },
+    { icon: <PiBookmarksSimpleFill />, page: "customMap", label: "Custom Map" },
   ];
 
   return (
@@ -39,5 +38,3 @@ function Navbar() {
     </div>
   );
 }
-
-export default Navbar;

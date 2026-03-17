@@ -10,11 +10,12 @@ import { BsDisplay } from "react-icons/bs";
 import MapLayersPanel from "@/components/SidebarPanels/MapLayersPanel.jsx";
 import LoginPanel from "../SidebarPanels/LoginPanel.jsx";
 import ChartSearchPanel from "../SidebarPanels/ChartSearchPanel.jsx";
+import CustomMapPanel from "../SidebarPanels/CustomMapPanel.jsx";
 
 // import { map } from "leaflet";
 
 function Sidebar() {
-  const { isSidebarOpen, activePage, closeSidebar } = useUI();
+  const { isSidebarOpen, activePage, closeSidebar, openSidebar } = useUI();
   const sidebarRef = useRef(null);
 
   // Defines width per page for visual variety.
@@ -67,7 +68,7 @@ function Sidebar() {
       case "chartSearch":
         return <ChartSearchPanel />;
       case "customMap":
-        return <p>Custom Map content here</p>;
+        return <CustomMapPanel onOpenLoginPanel={() => openSidebar("login")} />
       case "login":
         return <LoginPanel />;
       default:

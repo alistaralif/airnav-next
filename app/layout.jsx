@@ -6,6 +6,7 @@ import MapboxClientWrapper from "@/components/Mapbox/MapboxClientWrapper";
 import { UIProvider } from "@/context/UIContext";
 import { MapProvider } from "@/context/MapContext";
 import AuthProvider from "@/context/AuthProvider";
+import { BookmarkProvider } from "@/context/BookmarkContext";
 
 export const metadata = {
   title: "Airnav Map",
@@ -20,16 +21,18 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <AuthProvider>
-          <UIProvider>
-            <MapProvider>
-              <div className="app-container">
-                <Navbar />
-                <Sidebar />
-                <MapboxClientWrapper />
-                {children}
-              </div>
-            </MapProvider>
-          </UIProvider>
+          <BookmarkProvider>
+            <UIProvider>
+              <MapProvider>
+                <div className="app-container">
+                  <Navbar />
+                  <Sidebar />
+                  <MapboxClientWrapper />
+                  {children}
+                </div>
+              </MapProvider>
+            </UIProvider>
+          </BookmarkProvider>
         </AuthProvider>
       </body>
     </html>

@@ -1,6 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import "./FeatureInfoPanel.css";
+import { PiBookmarkSimpleLight, PiBookmarkSimpleFill } from "react-icons/pi";
+import SaveToCollectionModal from "@/components/SaveToCollectionModal/SaveToCollectionModal";
+import { useBookmarks } from "@/context/BookmarkContext";
 
 /**
  * Displays metadata of the selected map feature.
@@ -9,13 +12,14 @@ import "./FeatureInfoPanel.css";
  * Props:
  *  - feature: full GeoJSON feature (with properties & geometry)
  *  - onClose: callback to close panel
- *  - onSave: optional callback for saving to user’s custom map
  */
-export default function FeatureInfoPanel({ feature, onClose, onSave }) {
+export default function FeatureInfoPanel({ feature, onClose }) {
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const { isFeatureSaved } = useBookmarks();
+
   if (!feature) return null;
 
   const props = feature.properties || {};
-//   console.log ("FeatureInfoPanel props:", props);
   const isPoint = feature.geometry?.type === "Point";
   const coords = isPoint ? feature.geometry.coordinates : null;
   const warningType = props?.warning || null;
@@ -25,6 +29,9 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
   const isStarSid = props?.type === "SID" || props?.type === "STAR" || null;
   const starsidRunway = props?.runway || null;
   const starsidRoute = props?.route || null;
+
+  // Check if feature is already saved - now reactive to collections changes
+  const isSaved = isFeatureSaved(feature);
 
   /**
    * Formats route string/array into space-separated waypoints
@@ -41,49 +48,54 @@ export default function FeatureInfoPanel({ feature, onClose, onSave }) {
   }
 
   return (
-    <div className="feature-info-panel">
-      <button className="close-btn" onClick={onClose}>
-        ×
-      </button>
-
-      <h3 className="feature-title">{props.NAME || props.name || "Unnamed Feature"}</h3>
-
-      {props.subtitle && <h4 className="feature-subtitle">{props.subtitle}</h4>}
-      {isStarSid && <h4 className="feature-subtitle">{props.type} - {props.runway}</h4>}
-
-      <hr className="ruler"/>
-      
-      {warningType && <h5>{warningType} AREA</h5>}
-      {sectorFIR && <h5>{sectorFIR.toUpperCase()}</h5>}
-      {starsidRoute && (
-        <h5 className="feature-route">
-          {formatRoute(starsidRoute)}
-        </h5>
-      )}
-
-      {/* Generic list of all other properties
-      <ul className="feature-props">
-        {Object.entries(props)
-          .filter(([key]) => !["NAME", "name", "subtitle"].includes(key))
-          .map(([key, value]) => (
-            <li key={key}>
-              <strong>{key}: </strong>
-              <span>{String(value)}</span>
-            </li>
-          ))}
-      </ul> */}
-
-      {isPoint && coords && (
-        <h5 className="feature-coords">
-          {coords[1].toFixed(4)}, {coords[0].toFixed(4)}
-        </h5>
-      )}
-
-      <div className="feature-actions">
-        <button className="save-btn" onClick={() => onSave?.(feature)}>
-          Save to Custom Map
+    <>
+      <div className="feature-info-panel">
+        <button className="close-btn" onClick={onClose}>
+          ×
         </button>
+
+        <h3 className="feature-title">{props.NAME || props.name || "Unnamed Feature"}</h3>
+
+        {props.subtitle && <h4 className="feature-subtitle">{props.subtitle}</h4>}
+        {isStarSid && <h4 className="feature-subtitle">{props.type} - {props.runway}</h4>}
+
+        <hr className="ruler"/>
+        
+        {warningType && <h5>{warningType} AREA</h5>}
+        {sectorFIR && <h5>{sectorFIR.toUpperCase()}</h5>}
+        {starsidRoute && (
+          <h5 className="feature-route">
+            {formatRoute(starsidRoute)}
+          </h5>
+        )}
+
+        {isPoint && coords && (
+          <h5 className="feature-coords">
+            {coords[1].toFixed(4)}, {coords[0].toFixed(4)}
+          </h5>
+        )}
+
+        <div className="feature-actions">
+          <button 
+            className={`save-btn ${isSaved ? "saved" : ""}`} 
+            onClick={() => setShowSaveModal(true)}
+            title={isSaved ? "Saved to collection" : "Save to collection"}
+          >
+            {isSaved ? (
+              <PiBookmarkSimpleFill size={20} />
+            ) : (
+              <PiBookmarkSimpleLight size={20} />
+            )}
+          </button>
+        </div>
       </div>
-    </div>
+
+      {showSaveModal && (
+        <SaveToCollectionModal
+          feature={feature}
+          onClose={() => setShowSaveModal(false)}
+        />
+      )}
+    </>
   );
 }
