@@ -75,9 +75,9 @@ export default function SaveToCollectionModal({ feature, onClose }) {
 
         {/* New collection button/form */}
         <div className="save-modal-new-section">
-          <span className="section-label">Collections</span>
           {isCreating ? (
             <div className="new-collection-form">
+              <span className="section-label">New collection</span>
               <input
                 type="text"
                 placeholder="Collection name"
@@ -112,12 +112,17 @@ export default function SaveToCollectionModal({ feature, onClose }) {
               </div>
             </div>
           ) : (
-            <button 
-              className="new-collection-btn"
-              onClick={() => setIsCreating(true)}
-            >
-              New collection
-            </button>
+            <div className="new-collection-header">
+              <span className="section-label">
+                Collections
+              </span>
+              <button 
+                className="new-collection-btn"
+                onClick={() => setIsCreating(true)}
+              >
+                New collection
+              </button>
+            </div>
           )}
         </div>
 
