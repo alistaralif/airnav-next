@@ -1,8 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { useBookmarks } from "@/context/BookmarkContext";
+import { useUI } from "@/context/UIContext";
 import { FaPlus, FaTimes } from "react-icons/fa";
 import { PiCheckCircleFill, PiCircle } from "react-icons/pi";
+import { PiWarningCircleBold } from "react-icons/pi";
 import "./SaveToCollectionModal.css";
 
 export default function SaveToCollectionModal({ feature, onClose }) {
@@ -15,18 +17,45 @@ export default function SaveToCollectionModal({ feature, onClose }) {
     isAuthenticated,
   } = useBookmarks();
 
+  const { openSidebar } = useUI();
   const [isCreating, setIsCreating] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState("");
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 200); // Match animation duration
+  };
 
   if (!isAuthenticated) {
     return (
-      <div className="save-modal-overlay" onClick={onClose}>
+      <div 
+        className={`save-modal-overlay ${isClosing ? 'closing' : ''}`} 
+        onClick={handleClose}
+      >
         <div className="save-modal-sheet" onClick={(e) => e.stopPropagation()}>
           <div className="save-modal-handle" />
           <div className="save-modal-header">
             <h3>Save to Collection</h3>
           </div>
-          <p className="auth-warning">Please log in to save bookmarks.</p>
+          <div className="login-message">
+            <PiWarningCircleBold className="login-message-icon"/>
+            <p className="login-message-text">
+              Please{" "}
+              <button 
+                className="login-link" 
+                onClick={() => {
+                  openSidebar("login");
+                  handleClose();
+                }}
+              >
+                login
+              </button>
+              {" "}to save to collection.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -60,7 +89,10 @@ export default function SaveToCollectionModal({ feature, onClose }) {
   const collectionList = Object.values(collections);
 
   return (
-    <div className="save-modal-overlay" onClick={onClose}>
+    <div 
+      className={`save-modal-overlay ${isClosing ? 'closing' : ''}`} 
+      onClick={handleClose}
+    >
       <div className="save-modal-sheet" onClick={(e) => e.stopPropagation()}>
         {/* Drag handle */}
         <div className="save-modal-handle" />
@@ -162,7 +194,7 @@ export default function SaveToCollectionModal({ feature, onClose }) {
 
         {/* Done button */}
         <div className="save-modal-footer">
-          <button className="btn-done" onClick={onClose}>
+          <button className="btn-done" onClick={handleClose}>
             Done
           </button>
         </div>
