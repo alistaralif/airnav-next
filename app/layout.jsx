@@ -1,16 +1,10 @@
 import "./globals.css";
-import Navbar from "@/components/Navbar/Navbar";
-import Sidebar from "@/components/Sidebar/Sidebar";
-// import MapboxContainer from "@/components/Mapbox/MapboxContainer"; // Next.js 16 SSR incompatible
-import MapboxClientWrapper from "@/components/Mapbox/MapboxClientWrapper";
-import { UIProvider } from "@/context/UIContext";
-import { MapProvider } from "@/context/MapContext";
 import AuthProvider from "@/context/AuthProvider";
 import { BookmarkProvider } from "@/context/BookmarkContext";
 
 export const metadata = {
-  title: "Airnav Map",
-  description: "Interactive Air Navigation Map built with Next.js and Mapbox",
+  title: "AirNav",
+  description: "Aviation Navigation App",
   icons: {
     icon: "/airnav_sg.svg",
   }
@@ -22,16 +16,7 @@ export default function RootLayout({ children }) {
       <body>
         <AuthProvider>
           <BookmarkProvider>
-            <UIProvider>
-              <MapProvider>
-                <div className="app-container">
-                  <Navbar />
-                  <Sidebar />
-                  <MapboxClientWrapper />
-                  {children}
-                </div>
-              </MapProvider>
-            </UIProvider>
+            {children}
           </BookmarkProvider>
         </AuthProvider>
       </body>

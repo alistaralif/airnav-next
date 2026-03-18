@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useBookmarks } from "@/context/BookmarkContext";
 import {
   FaFolder,
@@ -8,6 +9,7 @@ import {
   FaEdit,
   FaCheck,
   FaTimes,
+  FaMap,
 } from "react-icons/fa";
 import { PiMapPinFill } from "react-icons/pi";
 import { TbRoute, TbPolygon } from "react-icons/tb";
@@ -15,6 +17,7 @@ import { PiWarningCircleBold } from "react-icons/pi";
 import "./CustomMapPanel.css";
 
 export default function CustomMapPanel({ onOpenLoginPanel }) {
+  const router = useRouter();
   const {
     collections,
     deleteCollection,
@@ -32,16 +35,13 @@ export default function CustomMapPanel({ onOpenLoginPanel }) {
       <div className="custom-map-panel">
         <h3>Custom Map</h3>
         <div className="login-message">
-          <PiWarningCircleBold className="login-message-icon"/>
+          <PiWarningCircleBold className="login-message-icon" />
           <p className="login-message-text">
             Please{" "}
-            <button 
-              className="login-link" 
-              onClick={onOpenLoginPanel}
-            >
+            <button className="login-link" onClick={onOpenLoginPanel}>
               login
-            </button>
-            {" "}to view your saved collections.
+            </button>{" "}
+            to view your saved collections.
           </p>
         </div>
       </div>
@@ -85,6 +85,11 @@ export default function CustomMapPanel({ onOpenLoginPanel }) {
 
   const handleRemoveFeature = (colId, featureIndex) => {
     removeFromCollectionByIndex(colId, featureIndex);
+  };
+
+  const handleViewOnMap = (e, colId) => {
+    e.stopPropagation();
+    router.push(`/collection/${colId}`);
   };
 
   const getFeatureIcon = (feature) => {
@@ -180,6 +185,14 @@ export default function CustomMapPanel({ onOpenLoginPanel }) {
                 )}
 
                 <div className="collection-actions">
+                  <button
+                    className="action-btn view-map"
+                    onClick={(e) => handleViewOnMap(e, col.id)}
+                    title="View on map"
+                    disabled={col.features.length === 0}
+                  >
+                    <FaMap />
+                  </button>
                   <button
                     className="action-btn edit"
                     onClick={(e) => handleStartEdit(e, col)}

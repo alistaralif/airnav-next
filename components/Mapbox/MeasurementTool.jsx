@@ -212,8 +212,6 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
 
   const addPoint = useCallback(
     (lngLat) => {
-    //   if (!map || !ensureLayers()) return;
-
       const coords = [lngLat.lng, lngLat.lat];
       pointsRef.current.push(coords);
 
@@ -256,7 +254,7 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
 
       updateLine();
     },
-    [map, ensureLayers, updateLine]
+    [map, updateLine]
   );
 
   const clearMeasurement = useCallback(() => {
@@ -296,8 +294,12 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
     map.on("sourcedata", bringToFront);
 
     return () => {
-      map.off("style.load", setupLayers);
-      map.off("sourcedata", bringToFront);
+      try {
+        map.off("style.load", setupLayers);
+        map.off("sourcedata", bringToFront);
+      } catch (e) {
+        // Map was already removed, ignore
+      }
     };
   }, [map, ensureLayers, updateLine, bringToFront]);
 
@@ -316,16 +318,27 @@ export default function MeasurementTool({ map, isActive, onMeasurementChange }) 
 
     map.on("click", handleClick);
 
-    if (isActive) {
-      map.getCanvas().style.cursor = "crosshair";
-      bringToFront();
-    } else {
-      map.getCanvas().style.cursor = "";
+    try {
+      if (isActive) {
+        map.getCanvas().style.cursor = "crosshair";
+        bringToFront();
+      } else {
+        map.getCanvas().style.cursor = "";
+      }
+    } catch (e) {
+      // Map canvas not available, ignore
     }
 
     return () => {
-      map.off("click", handleClick);
-      map.getCanvas().style.cursor = "";
+      try {
+        map.off("click", handleClick);
+        const canvas = map.getCanvas();
+        if (canvas) {
+          canvas.style.cursor = "";
+        }
+      } catch (e) {
+        // Map was already removed, ignore
+      }
     };
   }, [map, isActive, addPoint, clearMeasurement, bringToFront]);
 

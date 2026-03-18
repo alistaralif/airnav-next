@@ -129,6 +129,7 @@
 .collection-actions {
   display: flex;
   gap: 4px;
+  margin-left: auto;
 }
 
 .collection-header:hover .collection-actions {
@@ -140,7 +141,7 @@
   border: none;
   padding: 6px;
   cursor: pointer;
-  border-radius: 4px;
+border-radius: 4px;
   color: #888;
   transition: all 0.2s;
 }
@@ -155,6 +156,19 @@
 
 .action-btn.delete:hover {
   color: #e74c3c;
+}
+
+.action-btn.view-map {
+  color: #3b82f6;
+}
+
+.action-btn.view-map:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.action-btn.view-map:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .edit-name-form {
