@@ -125,7 +125,19 @@ export default function CustomMapPanel({ onOpenLoginPanel }) {
         {collectionList.length} collection{collectionList.length !== 1 ? "s" : ""}
       </p>
       <p className="panel-description">
-        Save related features here, then open a collection as a custom map to view them together.
+        <span className="panel-description-text">
+          Save related features here, then open a collection as a custom map to view them together.
+        </span>
+        <span
+          className="panel-description-hint"
+          tabIndex={0}
+          aria-label="Stored only in this browser for this account."
+        >
+          <PiWarningCircleBold />
+          <span className="panel-description-tooltip" role="tooltip">
+            Stored only in this browser for this account.
+          </span>
+        </span>
       </p>
 
       {collectionList.length === 0 ? (
