@@ -4,7 +4,8 @@ import { useParams, useRouter } from "next/navigation";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useBookmarks } from "@/context/BookmarkContext";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaTimes } from "react-icons/fa";
+import { PiCopy, PiCopyFill } from "react-icons/pi";
 import FeatureInfoPanel from "@/components/FeatureInfoPanel/FeatureInfoPanel";
 import MeasurementTool from "@/components/Mapbox/MeasurementTool";
 import MeasurementButton from "@/components/Mapbox/MeasurementButton";
@@ -33,12 +34,23 @@ export default function CollectionPage() {
   const [visibleTypes, setVisibleTypes] = useState({});
   const [isMeasuring, setIsMeasuring] = useState(false);
   const [measurement, setMeasurement] = useState(null);
+  const [isGeoJSONOpen, setIsGeoJSONOpen] = useState(false);
+  const [geojsonCopied, setGeojsonCopied] = useState(false);
   
   // Distance ring state
   const [radiusVisible, setRadiusVisible] = useState(false);
   const [radiusValue, setRadiusValue] = useState(40); // Default to 40NM
 
   const collectionId = params.id;
+  const collectionGeoJSON = {
+    type: "FeatureCollection",
+    features: (collection?.features || []).map((feature) => ({
+      type: feature?.type || "Feature",
+      geometry: feature?.geometry || null,
+      properties: feature?.properties || {},
+    })),
+  };
+  const collectionGeoJSONText = JSON.stringify(collectionGeoJSON, null, 2);
 
   useEffect(() => {
     if (collections && collectionId) {
@@ -57,12 +69,19 @@ export default function CollectionPage() {
       zoom: 5,
     });
 
+    const handleMapClick = () => {
+      setIsGeoJSONOpen(false);
+    };
+
+    map.current.on("click", handleMapClick);
+
     map.current.on("load", () => {
       setMapReady(true);
     });
 
     return () => {
       if (map.current) {
+        map.current.off("click", handleMapClick);
         map.current.remove();
         map.current = null;
       }
@@ -373,16 +392,76 @@ export default function CollectionPage() {
     }
   };
 
+  const handleCopyGeoJSON = async () => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(collectionGeoJSONText);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = collectionGeoJSONText;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "absolute";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
+      setGeojsonCopied(true);
+      setTimeout(() => {
+        setGeojsonCopied(false);
+      }, 1500);
+    } catch (error) {
+      console.error("Failed to copy GeoJSON:", error);
+    }
+  };
+
   return (
-    <div className="collection-page">
+    <div className={`collection-page ${isGeoJSONOpen ? "geojson-open" : ""}`}>
       <div className="collection-header-bar">
-        <button className="back-btn" onClick={() => router.back()}>
-          <FaArrowLeft /> Back
-        </button>
-        <h2>{collection?.name || "Collection"}</h2>
-        <span className="feature-count">
-          {collection?.features?.length || 0} features
-        </span>
+        <div className="collection-header-row">
+          <button className="back-btn" onClick={() => router.back()}>
+            <FaArrowLeft /> Back
+          </button>
+          <h2>{collection?.name || "Collection"}</h2>
+          <span className="feature-count">
+            {collection?.features?.length || 0} features
+          </span>
+          <button
+            className={`collection-geojson-toggle ${isGeoJSONOpen ? "open" : ""}`}
+            onClick={() => setIsGeoJSONOpen((prev) => !prev)}
+          >
+            GeoJSON
+          </button>
+        </div>
+
+        {isGeoJSONOpen && (
+          <div className="collection-geojson-section">
+            <div className="collection-geojson-header">
+              <span className="collection-geojson-label">{collection?.name || "Unnamed"}</span>
+              <div className="collection-geojson-actions">
+                <button
+                  className="collection-copy-geojson-btn"
+                  onClick={handleCopyGeoJSON}
+                  title="Copy GeoJSON"
+                >
+                  {geojsonCopied ? <PiCopyFill /> : <PiCopy />}
+                </button>
+                <button
+                  className="collection-close-geojson-btn"
+                  onClick={() => setIsGeoJSONOpen(false)}
+                  title="Close GeoJSON"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            </div>
+            <pre className="collection-geojson-display">
+              {collectionGeoJSONText}
+            </pre>
+          </div>
+        )}
       </div>
       
       <div className="collection-map-container" ref={mapContainer} />

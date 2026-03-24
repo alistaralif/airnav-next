@@ -558,7 +558,7 @@
 /* } */
 
 .geojson-display {
-  background-color: var(--code-bg, #1e1e1e);
+  background-color: var(--code-bg, #111827);
   color: var(--code-text, #d4d4d4);
   padding: 12px;
   border-radius: 6px;
