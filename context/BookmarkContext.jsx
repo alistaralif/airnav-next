@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
+import { getFeatureSubtitle } from "@/context/featureLabels";
 
 const BookmarkContext = createContext();
 
@@ -8,28 +9,6 @@ const BookmarkContext = createContext();
  * Builds a bookmark ID from the feature name, subtitle, and geometry type.
  * Coordinates are used only when a feature has no stable display name.
  */
-function getFeatureSubtitle(feature) {
-  const props = feature?.properties || {};
-
-  if (props.subtitle) {
-    return props.subtitle;
-  }
-
-  if (props.type === "SID" || props.type === "STAR") {
-    return [props.type, props.runway].filter(Boolean).join(" - ");
-  }
-
-  if (props.warning) {
-    return `${props.warning} Area`;
-  }
-
-  if (props["fir-label"]) {
-    return props["fir-label"].toUpperCase();
-  }
-
-  return props.TYPE || props.type || "";
-}
-
 function getFeatureId(feature) {
   if (!feature) return null;
   

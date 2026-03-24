@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useBookmarks } from "@/context/BookmarkContext";
+import { getFeatureSubtitle } from "@/context/featureLabels";
 import {
   FaFolder,
   FaFolderOpen,
@@ -115,20 +116,6 @@ export default function CustomMapPanel({ onOpenLoginPanel }) {
       feature?.properties?.type ||
       "Unnamed Feature"
     );
-  };
-
-  const getFeatureSubtitle = (feature) => {
-    const props = feature?.properties || {};
-    if (props.type === "SID" || props.type === "STAR") {
-      return `${props.type} - ${props.runway || ""}`;
-    }
-    if (props.warning) {
-      return `${props.warning} Area`;
-    }
-    if (props["fir-label"]) {
-      return props["fir-label"].toUpperCase();
-    }
-    return feature?.geometry?.type || "";
   };
 
   return (
