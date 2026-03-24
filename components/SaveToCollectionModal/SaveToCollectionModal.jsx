@@ -74,7 +74,7 @@ export default function SaveToCollectionModal({ feature, onClose }) {
         </div>
 
         {/* New collection button/form */}
-        <div className="save-modal-new-section">
+        <div className={`save-modal-new-section ${isCreating ? "creating" : ""}`}>
           <span className="section-label">Collections</span>
           {isCreating ? (
             <div className="new-collection-form">
