@@ -12,7 +12,7 @@ import { COLORS } from "@/components/Mapbox/colors";
 import { WSSS_COORDS, RADIUS_VALUES, createCircleGeoJSON } from "@/components/Mapbox/circleUtils";
 import CollectionLegend from "./CollectionLegend";
 import DistanceRingControl from "./DistanceRingControl";
-import "./collection.css";
+import "./page.css";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
