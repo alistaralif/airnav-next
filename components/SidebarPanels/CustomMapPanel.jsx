@@ -124,6 +124,9 @@ export default function CustomMapPanel({ onOpenLoginPanel }) {
       <p className="panel-subtitle">
         {collectionList.length} collection{collectionList.length !== 1 ? "s" : ""}
       </p>
+      <p className="panel-description">
+        Save related features here, then open a collection as a custom map to view them together.
+      </p>
 
       {collectionList.length === 0 ? (
         <div className="empty-state">
@@ -175,10 +178,11 @@ export default function CustomMapPanel({ onOpenLoginPanel }) {
                   <button
                     className="action-btn view-map"
                     onClick={(e) => handleViewOnMap(e, col.id)}
-                    title="View on map"
+                    title="Open as custom map"
                     disabled={col.features.length === 0}
                   >
                     <FaMap />
+                    <span className="action-btn-label">Open map</span>
                   </button>
                   <button
                     className="action-btn edit"
