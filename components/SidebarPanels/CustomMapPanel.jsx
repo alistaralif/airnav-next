@@ -34,7 +34,7 @@ export default function CustomMapPanel({ onOpenLoginPanel }) {
   if (!isAuthenticated) {
     return (
       <div className="custom-map-panel">
-        <h3>Custom Map</h3>
+        <h3>Saved Collections</h3>
         <div className="login-message">
           <PiWarningCircleBold className="login-message-icon" />
           <p className="login-message-text">
