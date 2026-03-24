@@ -158,13 +158,25 @@
   gap: 12px;
 }
 
+.new-collection-header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .btn-cancel-create {
   background: none;
   border: none;
+  border-radius: 6px;
   color: #8e8e93;
   font-size: 14px;
   cursor: pointer;
   padding: 6px 12px;
+}
+
+.btn-cancel-create:hover {
+  background: #f2f2f7;
 }
 
 .btn-create {
@@ -179,7 +191,7 @@
 }
 
 .btn-create:disabled {
-  background: #2c2c2e;
+  background: #1e293b;
   color: #636366;
   cursor: not-allowed;
 }
