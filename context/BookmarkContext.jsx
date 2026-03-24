@@ -5,38 +5,51 @@ import { useSession } from "next-auth/react";
 const BookmarkContext = createContext();
 
 /**
- * Generate a unique ID for a feature based on its name and type only.
- * We intentionally exclude coordinates because:
- * 1. Mapbox tiles features differently at different zoom levels
- * 2. Search results may have simplified geometry
- * 3. The name + geometry type is sufficient to identify a feature
+ * Builds a bookmark ID from the feature name, subtitle, and geometry type.
+ * Coordinates are used only when a feature has no stable display name.
  */
+function getFeatureSubtitle(feature) {
+  const props = feature?.properties || {};
+
+  if (props.subtitle) {
+    return props.subtitle;
+  }
+
+  if (props.type === "SID" || props.type === "STAR") {
+    return [props.type, props.runway].filter(Boolean).join(" - ");
+  }
+
+  if (props.warning) {
+    return `${props.warning} Area`;
+  }
+
+  if (props["fir-label"]) {
+    return props["fir-label"].toUpperCase();
+  }
+
+  return props.TYPE || props.type || "";
+}
+
 function getFeatureId(feature) {
   if (!feature) return null;
   
-  // Use name as primary identifier
   const name = feature?.properties?.NAME || feature?.properties?.name || "";
-  
-  // Use geometry type for disambiguation (e.g., same name but Point vs Polygon)
+  const subtitle = getFeatureSubtitle(feature);
   const type = feature?.geometry?.type || "";
-  
-  // For features without a name, we need something unique
-  // Use a hash of the first coordinate if available
+
   let fallback = "";
   if (!name && feature?.geometry?.coordinates) {
     const coords = feature.geometry.coordinates;
-    // Get the first coordinate point regardless of geometry type
     const firstCoord = Array.isArray(coords[0]) 
       ? (Array.isArray(coords[0][0]) ? coords[0][0] : coords[0])
       : coords;
     if (Array.isArray(firstCoord) && firstCoord.length >= 2) {
-      // Round to 4 decimal places for consistency
       fallback = `${firstCoord[0].toFixed(4)}_${firstCoord[1].toFixed(4)}`;
     }
   }
   
-  const id = `${name || fallback}_${type}`;
-  return id;
+  const idParts = [name || fallback, subtitle, type].filter(Boolean);
+  return idParts.length > 0 ? idParts.join("_") : null;
 }
 
 /**
