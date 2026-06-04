@@ -1,0 +1,80 @@
+.maplayers-panel h3 {
+  margin-bottom: 10px;
+}
+
+.maplayers-panel hr {
+  margin: 15px 0;
+}
+
+.maplayers-panel h4 {
+  margin-bottom: 8px;
+}
+
+.layer-toggle label {
+  margin-left: 8px;
+}
+
+.radius-control {
+  margin-bottom: 12px;
+}
+
+.radius-toggle-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.radius-toggle-row label {
+  margin-left: 8px;
+}
+
+.radius-slider-section {
+  opacity: 1;
+}
+
+.radius-slider-section.disabled {
+  opacity: 0.5;
+}
+
+.radius-slider-label {
+  font-size: 0.85rem;
+  color: #555;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.radius-control input[type="range"] {
+  width: 100%;
+}
+
+.radius-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.legend-flag {
+  font-size: 1.1rem;
+  margin-right: 6px;
+  width: 16px;
+  text-align: center;
+}
+
+.legend-color-swatch {
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.legend-label {
+  font-size: 0.9rem;
+  color: #333;
+}

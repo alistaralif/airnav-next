@@ -9,6 +9,7 @@
 import { useSession } from "next-auth/react";
 import { useMap } from "../../context/MapContext";
 import { RADIUS_VALUES } from "@/components/Mapbox/circleUtils";
+import "./MapLayersPanel.css";
 
 function MapLayersPanel() {
   const { data: session } = useSession();
@@ -52,7 +53,7 @@ function MapLayersPanel() {
   return (
     <div className="maplayers-panel">
       {/* Header */}
-      <h3 style={{ marginBottom: "10px" }}>Map Layers</h3>
+      <h3>Map Layers</h3>
 
       {/* Layer toggles */}
       {layerItems.map((item) => (
@@ -63,35 +64,32 @@ function MapLayersPanel() {
             checked={!!layerVisibility[item.key]}
             onChange={() => toggleLayerVisibility(item.key)}
           />
-          <label htmlFor={item.key} style={{ marginLeft: "8px" }}>
+          <label htmlFor={item.key}>
             {item.label}
           </label>
         </div>
       ))}
 
-      <hr style={{ margin: "15px 0" }} />
+      <hr />
 
       {/* Radius Circle Section */}
-      <h4 style={{ marginBottom: "8px" }}>Distance Ring (WSSS)</h4>
+      <h4>Distance Ring (WSSS)</h4>
       
-      <div className="radius-control" style={{ marginBottom: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
+      <div className="radius-control">
+        <div className="radius-toggle-row">
           <input
             type="checkbox"
             id="radius-circle-toggle"
             checked={radiusCircle.visible}
             onChange={(e) => setRadiusCircleVisible(e.target.checked)}
           />
-          <label htmlFor="radius-circle-toggle" style={{ marginLeft: "8px" }}>
+          <label htmlFor="radius-circle-toggle">
             Show Distance Ring
           </label>
         </div>
 
-        <div style={{ opacity: radiusCircle.visible ? 1 : 0.5 }}>
-          <label
-            htmlFor="radius-slider"
-            style={{ fontSize: "0.85rem", color: "#555", display: "block", marginBottom: "4px" }}
-          >
+        <div className={`radius-slider-section${!radiusCircle.visible ? " disabled" : ""}`}>
+          <label htmlFor="radius-slider" className="radius-slider-label">
             Radius: <strong>{radiusCircle.radius} NM</strong>
           </label>
           <input
@@ -102,57 +100,33 @@ function MapLayersPanel() {
             value={currentIndex}
             onChange={handleSliderChange}
             disabled={!radiusCircle.visible}
-            style={{ width: "100%" }}
           />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontSize: "0.7rem",
-              color: "#888",
-            }}
-          >
+          <div className="radius-range-labels">
             <span>1 NM</span>
             <span>5000 NM</span>
           </div>
         </div>
       </div>
 
-      <hr style={{ margin: "15px 0" }} />
+      <hr />
 
       {/* Legend Section */}
-      <h4 style={{ marginBottom: "8px" }}>Legend</h4>
+      <h4>Legend</h4>
       <div className="legend-list">
         {legends.map((legend, idx) => (
-          <div
-            key={idx}
-            className="legend-item"
-            style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
-          >
+          <div key={idx} className="legend-item">
             {legend.flag ? (
-              <span
-                style={{
-                  fontSize: "1.1rem",
-                  marginRight: "6px",
-                  width: "16px",
-                  textAlign: "center",
-                }}
-              >
-                {legend.flag}
-              </span>
+              <span className="legend-flag">{legend.flag}</span>
             ) : (
               <div
+                className="legend-color-swatch"
                 style={{
-                  width: "14px",
-                  height: "14px",
                   borderRadius: legend.shape === "circle" ? "50%" : "2px",
                   background: legend.color,
-                  marginRight: "8px",
-                  border: "1px solid rgba(0,0,0,0.2)",
                 }}
               />
             )}
-            <span style={{ fontSize: "0.9rem", color: "#333" }}>{legend.label}</span>
+            <span className="legend-label">{legend.label}</span>
           </div>
         ))}
       </div>
