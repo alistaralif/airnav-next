@@ -9,6 +9,7 @@
 import { createContext, useContext, useRef, useState, useEffect } from "react";
 import { COLORS } from "../components/Mapbox/colors.js";
 import { LAYERS } from "../components/Mapbox/layerConfig.js";
+import { DISTANCE_RINGS } from "../components/Mapbox/circleUtils.js";
 
 const MapContext = createContext();
 
@@ -25,27 +26,32 @@ export function MapProvider({ children }) {
   // Tracks floating legend visibility for layers without sublayers
   const [legendVisibility, setLegendVisibility] = useState({});
 
-  // Tracks radius circle state for drawing circles on the map
-  const [radiusCircle, setRadiusCircle] = useState({
-    center: null,
-    radius: 40,
-    visible: false,
+  // Tracks per-ring state (radius + visibility), keyed by ring id.
+  // One entry per airport center defined in DISTANCE_RINGS.
+  const [rings, setRings] = useState(() => {
+    const initial = {};
+    DISTANCE_RINGS.forEach((ring) => {
+      initial[ring.id] = { radius: 40, visible: false };
+    });
+    return initial;
   });
 
   /**
-   * Sets the visibility of the radius circle.
-   * @param {boolean} visible - Whether the circle should be visible.
+   * Sets the visibility of a single ring.
+   * @param {string} id - The ring id (airport).
+   * @param {boolean} visible - Whether the ring should be visible.
    */
-  const setRadiusCircleVisible = (visible) => {
-    setRadiusCircle((prev) => ({ ...prev, visible }));
+  const setRingVisible = (id, visible) => {
+    setRings((prev) => ({ ...prev, [id]: { ...prev[id], visible } }));
   };
 
   /**
-   * Sets the radius of the circle.
+   * Sets the radius of a single ring.
+   * @param {string} id - The ring id (airport).
    * @param {number} radius - The radius in nautical miles.
    */
-  const setRadiusCircleRadius = (radius) => {
-    setRadiusCircle((prev) => ({ ...prev, radius }));
+  const setRingRadius = (id, radius) => {
+    setRings((prev) => ({ ...prev, [id]: { ...prev[id], radius } }));
   };
 
   /**
@@ -279,10 +285,9 @@ export function MapProvider({ children }) {
         legendVisibility,
         toggleLegendVisibility,
         getLegends,
-        radiusCircle,
-        setRadiusCircle,
-        setRadiusCircleVisible,
-        setRadiusCircleRadius,
+        rings,
+        setRingVisible,
+        setRingRadius,
       }}
     >
       {children}

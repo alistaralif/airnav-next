@@ -8,7 +8,8 @@
 
 import { useSession } from "next-auth/react";
 import { useMap } from "../../context/MapContext";
-import { RADIUS_VALUES } from "@/components/Mapbox/circleUtils";
+import { DISTANCE_RINGS } from "@/components/Mapbox/circleUtils";
+import DistanceRing from "./DistanceRing";
 import "./MapLayersPanel.css";
 
 function MapLayersPanel() {
@@ -17,9 +18,6 @@ function MapLayersPanel() {
     layerVisibility,
     toggleLayerVisibility,
     getLegends,
-    radiusCircle,
-    setRadiusCircleVisible,
-    setRadiusCircleRadius,
   } = useMap();
 
   // Defines user-friendly labels for each layer
@@ -40,15 +38,6 @@ function MapLayersPanel() {
     }
     return true;
   });
-
-  // Find the index of current radius value for the slider
-  const radiusIndex = RADIUS_VALUES.indexOf(radiusCircle.radius);
-  const currentIndex = radiusIndex >= 0 ? radiusIndex : 6; // default to 50 NM (index 6)
-
-  const handleSliderChange = (e) => {
-    const index = parseInt(e.target.value, 10);
-    setRadiusCircleRadius(RADIUS_VALUES[index]);
-  };
 
   return (
     <div className="maplayers-panel">
@@ -72,41 +61,18 @@ function MapLayersPanel() {
 
       <hr />
 
-      {/* Radius Circle Section */}
-      <h4>Distance Ring (WSSS)</h4>
-      
-      <div className="radius-control">
-        <div className="radius-toggle-row">
-          <input
-            type="checkbox"
-            id="radius-circle-toggle"
-            checked={radiusCircle.visible}
-            onChange={(e) => setRadiusCircleVisible(e.target.checked)}
-          />
-          <label htmlFor="radius-circle-toggle">
-            Show Distance Ring
-          </label>
-        </div>
+      {/* Distance Rings Section: one ring control per airport center */}
+      <h4>Distance Rings</h4>
 
-        <div className={`radius-slider-section${!radiusCircle.visible ? " disabled" : ""}`}>
-          <label htmlFor="radius-slider" className="radius-slider-label">
-            Radius: <strong>{radiusCircle.radius} NM</strong>
-          </label>
-          <input
-            type="range"
-            id="radius-slider"
-            min={0}
-            max={RADIUS_VALUES.length - 1}
-            value={currentIndex}
-            onChange={handleSliderChange}
-            disabled={!radiusCircle.visible}
-          />
-          <div className="radius-range-labels">
-            <span>1 NM</span>
-            <span>5000 NM</span>
-          </div>
-        </div>
-      </div>
+      {DISTANCE_RINGS.map((ring) => (
+        <DistanceRing
+          key={ring.id}
+          id={ring.id}
+          label={ring.label}
+          center={ring.center}
+          color={ring.color}
+        />
+      ))}
 
       <hr />
 

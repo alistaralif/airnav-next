@@ -11,5 +11,14 @@ export const COLORS = {
     star: "rgba(218, 92, 92, 0.8)",
     // atsRoute: "rgba(22, 77, 98, 0.8)",
     atsRoute: "rgba(53, 21, 80, 0.9)",
-    radiusCircle: "rgb(34, 59, 99)", // Blue for radius ring
+    // radiusCircle: "rgb(34, 59, 99)", // Blue for radius ring
   };
+
+// Distinct colors for each distance ring (one per airport center)
+export const RING_COLORS = [
+  "rgb(34, 59, 99)",   // blue
+  "rgb(161, 33, 13)",   // brown
+  "rgb(35, 90, 52)",  // green
+  "rgb(230, 61, 5)",   // orange
+  "rgb(203, 203, 0)",   // yellow
+];
