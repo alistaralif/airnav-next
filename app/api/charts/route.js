@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { logger } from "@/lib/logger";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -12,15 +13,15 @@ export async function GET(request) {
 
   try {
     const chartsDir = path.join(process.cwd(), "public", "data", "charts");
-    
-    // Check if directory exists
+
+    // Returns early if the charts directory has not been populated.
     if (!fs.existsSync(chartsDir)) {
       return NextResponse.json({ charts: [] });
     }
 
     const files = fs.readdirSync(chartsDir);
-    
-    // Filter PDF files that match the query
+
+    // Filters for PDF files whose name contains the query string.
     const matchingCharts = files
       .filter((file) => {
         const fileName = file.toUpperCase();
@@ -34,7 +35,7 @@ export async function GET(request) {
 
     return NextResponse.json({ charts: matchingCharts });
   } catch (error) {
-    console.error("Charts API error:", error);
+    logger.error("charts fetch failed", { route: "/api/charts", query, error: error.message });
     return NextResponse.json({ charts: [], error: error.message }, { status: 500 });
   }
 }

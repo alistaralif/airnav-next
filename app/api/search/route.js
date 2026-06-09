@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { getServerSession } from "next-auth";
+import { logger } from "@/lib/logger";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -10,12 +11,9 @@ export async function GET(request) {
     return Response.json({ results: [] });
   }
 
-  // Check if user is authenticated
+  // Checks whether the requesting user holds a valid session.
   const session = await getServerSession();
   const isAuthorized = !!session?.user;
-
-  console.log("Search API - Session:", session);
-  console.log("Search API - Authorized:", isAuthorized);
 
   const publicFiles = [
     "data/FIRs.geojson",
@@ -28,7 +26,7 @@ export async function GET(request) {
 
   const results = [];
 
-  // Search public files
+  // Searches each public GeoJSON file and collects features whose name matches the query.
   for (const file of publicFiles) {
     try {
       const filePath = path.join(process.cwd(), "public", file);
@@ -48,18 +46,18 @@ export async function GET(request) {
         }
       });
     } catch (error) {
-      console.error(`Error reading ${file}:`, error.message);
+      logger.error("search file read failed", { route: "/api/search", file, error: error.message });
     }
   }
 
-  // Search Sectors (with Singapore filtering for unauthorized users)
+  // Searches the private Sectors file; filters out Singapore sectors for unauthenticated users.
   try {
     const filePath = path.join(process.cwd(), "data/private/Sectors.geojson");
     const raw = await fs.readFile(filePath, "utf8");
     const geojson = JSON.parse(raw);
 
     geojson.features.forEach((feature) => {
-      // Filter out Singapore sectors for unauthorized users
+      // Excludes Singapore sectors for unauthorized users.
       if (!isAuthorized && feature.properties.fir === "Singapore") {
         return;
       }
@@ -75,7 +73,7 @@ export async function GET(request) {
       }
     });
   } catch (error) {
-    console.error("Error reading Sectors:", error.message);
+    logger.error("search sectors read failed", { route: "/api/search", error: error.message });
   }
 
   return Response.json({ results });
