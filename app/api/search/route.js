@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { getServerSession } from "next-auth";
+import * as Sentry from "@sentry/nextjs";
 import { logger } from "@/lib/logger";
 
 export async function GET(request) {
@@ -46,6 +47,7 @@ export async function GET(request) {
         }
       });
     } catch (error) {
+      Sentry.captureException(error);
       logger.error("search file read failed", { route: "/api/search", file, error: error.message });
     }
   }
@@ -73,6 +75,7 @@ export async function GET(request) {
       }
     });
   } catch (error) {
+    Sentry.captureException(error);
     logger.error("search sectors read failed", { route: "/api/search", error: error.message });
   }
 

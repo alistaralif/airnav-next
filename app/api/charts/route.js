@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import * as Sentry from "@sentry/nextjs";
 import { logger } from "@/lib/logger";
 
 export async function GET(request) {
@@ -35,6 +36,7 @@ export async function GET(request) {
 
     return NextResponse.json({ charts: matchingCharts });
   } catch (error) {
+    Sentry.captureException(error);
     logger.error("charts fetch failed", { route: "/api/charts", query, error: error.message });
     return NextResponse.json({ charts: [], error: error.message }, { status: 500 });
   }

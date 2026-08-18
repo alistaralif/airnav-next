@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import fs from "fs";
 import path from "path";
+import * as Sentry from "@sentry/nextjs";
 import { logger } from "@/lib/logger";
 
 export async function GET(request) {
@@ -24,6 +25,7 @@ export async function GET(request) {
 
     return NextResponse.json(data);
   } catch (error) {
+    Sentry.captureException(error);
     logger.error("sectors fetch failed", { route: "/api/sectors", error: error.message });
     return NextResponse.json(
       { error: "Failed to load sectors data" },

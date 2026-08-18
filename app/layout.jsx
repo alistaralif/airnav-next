@@ -1,6 +1,7 @@
 import "./globals.css";
 import AuthProvider from "@/context/AuthProvider";
 import { BookmarkProvider } from "@/context/BookmarkContext";
+import SentryUserContext from "@/components/SentryUserContext";
 
 export const metadata = {
   title: "AirNav",
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
       <body>
         <AuthProvider>
           <BookmarkProvider>
+            <SentryUserContext />
             {children}
           </BookmarkProvider>
         </AuthProvider>
