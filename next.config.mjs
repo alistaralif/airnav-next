@@ -8,5 +8,9 @@ const nextConfig = {
 export default withSentryConfig(nextConfig, {
   silent: true,         // suppresses Sentry build output
   hideSourceMaps: true, // keeps source maps out of the client bundle (uploaded to Sentry instead)
-  disableLogger: true,  // tree-shakes Sentry's debug logger in production
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true, // strips Sentry's internal debug statements from the bundle
+    },
+  },
 });
