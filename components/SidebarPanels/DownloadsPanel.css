@@ -1,0 +1,66 @@
+.downloads-panel {
+  padding: 0px 15px 0px 0px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.downloads-panel h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.2rem;
+  color: #1a1a2e;
+}
+
+.downloads-panel .panel-description {
+  margin: 0 0 16px 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Square card grid */
+.downloads-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.download-card {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: #f8f9fa;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.download-card:hover:not(:disabled) {
+  background: #e9f5ff;
+  border-color: #3b82f6;
+}
+
+.download-card:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.download-card-icon {
+  font-size: 2.6rem;
+  color: #3b82f6;
+  margin-bottom: 4px;
+}
+
+/* Reserves two lines so long names don't shift the icon position */
+.download-card-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.25;
+  height: 2.5em;
+  color: #333;
+  text-align: center;
+}

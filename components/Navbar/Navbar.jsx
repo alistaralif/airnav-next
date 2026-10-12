@@ -4,7 +4,7 @@
 
 import { useUI } from "@/context/UIContext";
 import { FaLayerGroup } from "react-icons/fa";
-import { PiBookmarksSimpleFill } from "react-icons/pi";
+import { PiBookmarksSimpleFill, PiDownloadSimpleBold } from "react-icons/pi";
 import AuthButton from "./AuthButton";
 import { TbMapSearch } from "react-icons/tb";
 
@@ -16,6 +16,7 @@ export default function Navbar() {
   const navItems = [
     { icon: <FaLayerGroup />, page: "mapLayers", label: "Map Layers" },
     { icon: <TbMapSearch />, page: "chartSearch", label: "Chart Search" },
+    { icon: <PiDownloadSimpleBold />, page: "downloads", label: "Downloads" },
     { icon: <PiBookmarksSimpleFill />, page: "customMap", label: "Custom Map" },
   ];
 

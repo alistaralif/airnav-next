@@ -11,6 +11,7 @@ import MapLayersPanel from "@/components/SidebarPanels/MapLayersPanel.jsx";
 import LoginPanel from "../SidebarPanels/LoginPanel.jsx";
 import ChartSearchPanel from "../SidebarPanels/ChartSearchPanel.jsx";
 import CustomMapPanel from "../SidebarPanels/CustomMapPanel.jsx";
+import DownloadsPanel from "../SidebarPanels/DownloadsPanel.jsx";
 
 // import { map } from "leaflet";
 
@@ -22,6 +23,7 @@ function Sidebar() {
   const widthByPage = {
     mapLayers: "20vw",
     chartSearch: "30vw",
+    downloads: "37.5vw",
     customMap: "45vw",
     login: "18vw",
   };
@@ -67,6 +69,8 @@ function Sidebar() {
         return <MapLayersPanel />;
       case "chartSearch":
         return <ChartSearchPanel />;
+      case "downloads":
+        return <DownloadsPanel />;
       case "customMap":
         return <CustomMapPanel onOpenLoginPanel={() => openSidebar("login")} />
       case "login":
