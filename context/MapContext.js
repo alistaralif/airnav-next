@@ -141,7 +141,7 @@ export function MapProvider({ children }) {
     const relatedLayers = LAYERS.filter((layer) => layer.group === layerGroup);
 
     relatedLayers.forEach((layer) => {
-      const targetIds = [layer.id, layer.outline?.id].filter(Boolean);
+      const targetIds = [layer.id, layer.outline?.id, layer.hitArea?.id].filter(Boolean);
       targetIds.forEach((id) => {
         if (map.getLayer(id)) {
           map.setLayoutProperty(
@@ -194,6 +194,9 @@ export function MapProvider({ children }) {
       if (layerConfig.outline?.id) {
         map.setFilter(layerConfig.outline.id, filter);
       }
+      if (layerConfig.hitArea?.id) {
+        map.setFilter(layerConfig.hitArea.id, filter);
+      }
 
       return updated;
     });
@@ -214,7 +217,7 @@ export function MapProvider({ children }) {
       // Find all layers belonging to this group and toggle their map visibility
       const relatedLayers = LAYERS.filter((layer) => layer.group === group);
       relatedLayers.forEach((layer) => {
-        const targetIds = [layer.id, layer.outline?.id].filter(Boolean);
+        const targetIds = [layer.id, layer.outline?.id, layer.hitArea?.id].filter(Boolean);
         targetIds.forEach((id) => {
           if (map.getLayer(id)) {
             map.setLayoutProperty(

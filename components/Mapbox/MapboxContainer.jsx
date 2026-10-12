@@ -111,13 +111,6 @@ export default function MapboxContainer() {
               layout: layer.layout || {},
             });
 
-            // Add click handler for hit area
-            map.on("click", layer.hitArea.id, (e) => {
-              const feature = e.features[0];
-              showPopup(map, feature, e.lngLat);
-              setSelectedFeature(feature);
-            });
-
             // Change cursor on hover for hit area
             map.on("mouseenter", layer.hitArea.id, () => {
               map.getCanvas().style.cursor = "pointer";
@@ -137,22 +130,31 @@ export default function MapboxContainer() {
               layout: layer.layout || {},
             });
           }
-          
-          
-          map.on("click", layer.id, (e) => {
-            const feature = e.features[0];
-            const coords =
-              layer.id === "waypoints"
-                ? feature.geometry.coordinates.slice()
-                : e.lngLat;
-      
-            showPopup(map, feature, coords);
-            setSelectedFeature(feature);
-          });
         } catch (error) {
           console.error(`❌ Error loading ${layer.id}:`, error);
         }
       }
+
+      // Single click handler so only the topmost feature responds.
+      // Per-layer handlers would all fire, letting FIR/sector fills underneath
+      // steal clicks meant for routes. Hit areas stand in for their thin lines.
+      const clickableLayerIds = sortedLayers.flatMap((layer) =>
+        layer.hitArea ? [layer.hitArea.id] : [layer.id]
+      );
+
+      map.on("click", (e) => {
+        const layers = clickableLayerIds.filter((id) => map.getLayer(id));
+        const feature = map.queryRenderedFeatures(e.point, { layers })[0];
+        if (!feature) return;
+
+        const coords =
+          feature.layer.id === "waypoints"
+            ? feature.geometry.coordinates.slice()
+            : e.lngLat;
+
+        showPopup(map, feature, coords);
+        setSelectedFeature(feature);
+      });
 
       // Popup on highlight layer
       map.on("click", "search-highlight", (e) => {
