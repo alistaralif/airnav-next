@@ -21,6 +21,8 @@ import { LAYERS } from "./layerConfig.js";
 import { createCircleGeoJSON, DISTANCE_RINGS } from "./circleUtils";
 import MeasurementTool from "./MeasurementTool";
 import MeasurementButton from "./MeasurementButton";
+import CoordinateTool from "./CoordinateTool";
+import CoordinateButton from "./CoordinateButton";
 
 // Mapbox style to be used
 const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
@@ -34,6 +36,13 @@ export default function MapboxContainer() {
   const [selectedFeature, setSelectedFeature] = useState(null); // Currently selected feature for info panel
   const [measurementActive, setMeasurementActive] = useState(false);
   const [measurement, setMeasurement] = useState(null);
+  const [coordinateActive, setCoordinateActive] = useState(false);
+
+  // Lets the map click handler (registered once on load) see the current tool state
+  const toolActiveRef = useRef(false);
+  useEffect(() => {
+    toolActiveRef.current = measurementActive || coordinateActive;
+  }, [measurementActive, coordinateActive]);
 
   // Initializes the map only once upon mounting
   useEffect(() => {
@@ -143,6 +152,9 @@ export default function MapboxContainer() {
       );
 
       map.on("click", (e) => {
+        // Map tools (measure, coordinates) take over clicks while active
+        if (toolActiveRef.current) return;
+
         const layers = clickableLayerIds.filter((id) => map.getLayer(id));
         const feature = map.queryRenderedFeatures(e.point, { layers })[0];
         if (!feature) return;
@@ -260,11 +272,23 @@ export default function MapboxContainer() {
   return (
     <>
     {mapLoaded && <SearchBar onFeatureSelect={(f) => setSelectedFeature(f)} />}
-    <MeasurementButton
-      isActive={measurementActive}
-      onClick={() => setMeasurementActive(!measurementActive)}
-      measurement={measurement}
-    />
+    <div className="map-tool-controls">
+      <MeasurementButton
+        isActive={measurementActive}
+        onClick={() => {
+          setMeasurementActive(!measurementActive);
+          setCoordinateActive(false);
+        }}
+        measurement={measurement}
+      />
+      <CoordinateButton
+        isActive={coordinateActive}
+        onClick={() => {
+          setCoordinateActive(!coordinateActive);
+          setMeasurementActive(false);
+        }}
+      />
+    </div>
     <div
       ref={mapContainerRef}
       className="mapbox-container"
@@ -275,6 +299,12 @@ export default function MapboxContainer() {
         map={mapRef.current}
         isActive={measurementActive}
         onMeasurementChange={setMeasurement}
+      />
+    )}
+    {mapLoaded && (
+      <CoordinateTool
+        map={mapRef.current}
+        isActive={coordinateActive}
       />
     )}
     {selectedFeature && (

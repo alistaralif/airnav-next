@@ -167,13 +167,25 @@ body, html, #root {
   z-index: 0; /* Base layer */
 }
 
-/* Measurement Tool Styles - Higher specificity */
-.measurement-controls {
+/* Map tool buttons (measure, coordinates) sit side by side */
+.map-tool-controls {
   position: fixed;
   top: 20px; /* Same as .searchbar-wrapper */
   left: 7%;
-  padding: 0px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   z-index: 10 !important; /* Higher than other elements */
+}
+
+/* Direct-child buttons size to content instead of stretching across the row */
+.map-tool-controls > .measurement-button {
+  width: auto;
+}
+
+/* Measurement Tool Styles - Higher specificity */
+.measurement-controls {
+  padding: 0px;
   /* border: 1px solid green; Temporary outline for debugging */
 }
 
